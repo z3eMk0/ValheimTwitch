@@ -2,9 +2,10 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using ValheimTwitch.Gui;
 using ValheimTwitch.Helpers;
+using ValheimTwitch.Twitch.API;
 using ValheimTwitch.Twitch.API.Helix;
-using ValheimTwitch.Update;
 
 namespace ValheimTwitch.Patches
 {
@@ -37,8 +38,7 @@ namespace ValheimTwitch.Patches
     public static class FejdStartupStartPatch
     {
         public static GameObject gui;
-        public static AssetBundle guiBundle;
-        public static ValheimTwitchGUIScript guiScript;
+        //public static ValheimTwitchGUIScript guiScript;
 
         public static List<Shortcut> shortcuts = new List<Shortcut> { 
             new Shortcut { Name = "Whistle", Label = "Whistle" },
@@ -53,32 +53,28 @@ namespace ValheimTwitch.Patches
 
                 Log.Info($"Load shortcut {shortcut.Name} -> {shortcut.Code}");
 
-                guiScript.settingsPanel.AddKeyInput(shortcut.Label, shortcut.Code, (object sender, KeyCodeArgs args) => {
-                    PluginConfig.SetInt($"shortcut-{shortcut.Name}", (int)args.Code);
-                    shortcut.Code = args.Code;
-                });
+                //guiScript.settingsPanel.AddKeyInput(shortcut.Label, shortcut.Code, (object sender, KeyCodeArgs args) => {
+                //    PluginConfig.SetInt($"shortcut-{shortcut.Name}", (int)args.Code);
+                //    shortcut.Code = args.Code;
+                //});
             }
         }
 
         public static void Postfix(FejdStartup __instance)
         {
             var mainGui = __instance.m_mainMenu;
-            guiBundle = guiBundle ?? EmbeddedAsset.LoadAssetBundle("Assets.valheimtwitchgui");
-            var prefab = guiBundle.LoadAsset<GameObject>("Valheim Twitch GUI");
+            //gui.transform.SetParent(mainGui.transform);
 
-            gui = UnityEngine.Object.Instantiate(prefab);
-            gui.transform.SetParent(mainGui.transform);
+            //guiScript = gui.GetComponent<ValheimTwitchGUIScript>();
 
-            guiScript = gui.GetComponent<ValheimTwitchGUIScript>();
+            //guiScript.mainButton.OnClick(() => OnMainButtonClick());
+            //guiScript.refreshRewardButton.OnClick(() => {
+            //    Plugin.Instance.UpdateRwardsList();
+            //    UpdateRewardGrid();
+            //});
 
-            guiScript.mainButton.OnClick(() => OnMainButtonClick());
-            guiScript.refreshRewardButton.OnClick(() => {
-                Plugin.Instance.UpdateRwardsList();
-                UpdateRewardGrid();
-            });
-
-            guiScript.rewardSettings.OnSettingsChanged += OnRewardSettingschanged;
-            guiScript.addRewardForm.OnSave += OnNewRewardSave;
+            //guiScript.rewardSettings.OnSettingsChanged += OnRewardSettingschanged;
+            //guiScript.addRewardForm.OnSave += OnNewRewardSave;
 
             UpdateMainButonText();
             UpdateRewardGrid();
@@ -88,8 +84,8 @@ namespace ValheimTwitch.Patches
 
         public static void ShowUpdatePanel()
         {
-            if (Release.HasNewVersion())
-                guiScript.updatePanel.SetActive(true);
+            //if (Release.HasNewVersion())
+            //    guiScript.updatePanel.SetActive(true);
         }
 
         private static void OnNewRewardSave(object sender, NewRewardArgs reward)
@@ -100,9 +96,9 @@ namespace ValheimTwitch.Patches
 
                 Plugin.Instance.UpdateRwardsList(() =>
                 {
-                    guiScript.addRewardForm.Hide();
+                    //guiScript.addRewardForm.Hide();
                     UpdateRewardGrid(newReward.Id);
-                    guiScript.rewardSettings.SetActive(true);
+                    //guiScript.rewardSettings.SetActive(true);
                 });
             }
             catch(CustomRewardException e)
@@ -114,32 +110,8 @@ namespace ValheimTwitch.Patches
                     message = "A reward with the same name already exists on your account.";
                 }
 
-                guiScript.addRewardForm.error.Show(message);
+                //guiScript.addRewardForm.error.Show(message);
             }
-        }
-
-        private static void OnRewardSettingschanged(object sender, SettingsChangedArgs e)
-        {
-            var key = guiScript.rewardSettings.reward.id;
-
-            if (e.Data is RavenMessageData)
-            {
-                RewardsConfig.Set(key, e.Data as RavenMessageData);
-            }
-            else if (e.Data is SpawnCreatureData)
-            {
-                RewardsConfig.Set(key, e.Data as SpawnCreatureData);
-            }
-            else if (e.Data is HUDMessageData)
-            {
-                RewardsConfig.Set(key, e.Data as HUDMessageData);
-            }
-            else
-            {
-                RewardsConfig.Set(key, e.Data);
-            }
-
-            UpdateRewardGrid();
         }
 
         private static void OnMainButtonClick()
@@ -150,21 +122,22 @@ namespace ValheimTwitch.Patches
             }
             else
             {
-                guiScript.notAffiliatPanel.SetActive(!Plugin.Instance.twitchClient.HasChannelPoints());
-                guiScript.mainPanel.ToggleActive();
+                //guiScript.notAffiliatPanel.SetActive(!Plugin.Instance.twitchClient.HasChannelPoints());
+                //guiScript.mainPanel.ToggleActive();
             }
         }
 
         public static void UpdateMainButonText()
         {
-            var user = Plugin.Instance.GetUser();
+            Plugin.initialScreen.RefreshMainPanel();
+            //var user = Plugin.Instance.GetUser();
 
-            guiScript?.mainButton.SetText(user == null ? "Connexion" : user.DisplayName);
+            //guiScript?.mainButton.SetText(user == null ? "Connexion" : user.DisplayName);
         }
 
         public static void UpdateRewardGrid(string newRewardId = null)
         {
-            guiScript?.rewardGrid.Clear();
+            //guiScript?.rewardGrid.Clear();
 
             if (Plugin.Instance?.twitchRewards == null)
             {
@@ -187,7 +160,7 @@ namespace ValheimTwitch.Patches
 
                     bool isNew = newRewardId == reward.Id;
 
-                    guiScript.rewardGrid.Add(rewardGridItem, isNew);
+                    //guiScript.rewardGrid.Add(rewardGridItem, isNew);
                 }
                 catch (Exception e)
                 {

@@ -112,6 +112,19 @@ namespace ValheimTwitch.Helpers
 
             return fonts[0];
         }
+
+        public static string LoadString(string assetPath)
+        {
+            Stream fileStream = LoadEmbeddedAsset(assetPath);
+            if (fileStream != null)
+            {
+                using (StreamReader reader = new StreamReader(fileStream))
+                {
+                    return reader.ReadToEnd();
+                }
+            }
+            return "";
+        }
     }
 
 }

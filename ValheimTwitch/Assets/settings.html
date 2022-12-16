@@ -1,0 +1,434 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset='utf-8'>
+  <title>Valheim Twitch Rewards</title>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+</head>
+
+<body>
+  <h4>Rewards</h4>
+  <button onclick="openCreateRewardForm(event)">+ New</button>
+  <button onclick="openCreateRewardForm(event)">Activate all</button>
+  <button onclick="openCreateRewardForm(event)">Deactivate all</button>
+  <table id="rewards">
+    <thead>
+      <tr>
+        <th>Toggle</th>
+        <th>Cost</th>
+        <th>Title</th>
+        <th>Edit</th>
+        <th>Delete</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+  <table id="rewardForm" style="display: none;">
+    <tbody>
+      <tr>
+        <td>Title</td>
+        <td>
+          <input id="rewardTitle" type="text">
+          <input id="rewardId" type="hidden">
+        </td>
+      </tr>
+      <tr>
+        <td>Cost</td>
+        <td>
+          <input id="rewardCost" type="number">
+        </td>
+      </tr>
+      <tr>
+        <td>Is user input required</td>
+        <td>
+          <input id="rewardUserInputRequired" type="checkbox">
+        </td>
+      </tr>
+      <tr>
+        <td>Prompt</td>
+        <td>
+          <input id="rewardPrompt" type="text">
+        </td>
+      </tr>
+      <tr>
+        <td>Should redemptions skip request queue</td>
+        <td>
+          <input id="rewardSkipRequestQueue" type="checkbox">
+        </td>
+      </tr>
+      <tr id="rewardTypeRow">
+        <td>Type</td>
+        <td>
+          <select id="rewardTypes" onchange="rewardTypeChanged()"></select>
+        </td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td><button onclick="saveRewardClicked()">Save</button></td>
+        <td><button>Cancel</button></td>
+      </tr>
+    </tfoot>
+  </table>
+  <template id="spawnForm">
+    <tr>
+      <td>Creature</td>
+      <td><select id="creatureType"></select></td>
+    </tr>
+    <tr>
+      <td>Level</td>
+      <td><input id="creatureLevel" type="number" value="1"></td>
+    </tr>
+    <tr>
+      <td>Count</td>
+      <td><input id="creatureCount" type="number" value="1"></td>
+    </tr>
+    <tr>
+      <td>Distance</td>
+      <td><input id="creatureDistance" type="number" value="100"></td>
+    </tr>
+    <tr>
+      <td>Tamed</td>
+      <td><input id="creatureTamed" type="checkbox" value="false"></td>
+    </tr>
+  </template>
+  <script>
+    async function loadRewards() {
+      let response = await fetch("/rewards");
+      let rewards = (await response.json()) || [];
+      drawRewards(rewards);
+    }
+    async function saveRewardClicked() {
+      let reward = getReward();
+      if (!reward.data.id) {
+        let response = await fetch("/rewards", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(reward),
+        });
+        if (response.status === 201) {
+          await loadRewards();
+        }
+      } else {
+        let response = await fetch("/rewards/" + reward.data.id, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(reward),
+        });
+        if (response.status === 200) {
+          await loadRewards();
+        }
+      }
+    }
+    async function toggleReward(reward) {
+      reward.data.is_enabled = !reward.data.is_enabled
+      let response = await fetch("/rewards/" + reward.data.id, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(reward),
+        });
+        if (response.status === 200) {
+          //TODO ip: update only the checkbox
+          await loadRewards();
+        }
+    }
+    function getReward() {
+      let data = new Reward();
+      data.id = document.getElementById("rewardId").value;
+      data.title = document.getElementById("rewardTitle").value;
+      data.prompt = document.getElementById("rewardPrompt").value;
+      let cost = Number.parseInt(document.getElementById("rewardCost").value, 10);
+      data.cost = Number.isNaN(cost) ? 1 : cost;
+      data.is_user_input_required = document.getElementById("rewardUserInputRequired").checked;
+      data.should_redemptions_skip_request_queue = document.getElementById("rewardSkipRequestQueue").checked;
+      let settings = new SpawnCreatureData();
+      settings.creature = Number.parseInt(document.getElementById("creatureType").selectedOptions[0].value, 10);
+      return {
+        data,
+        settings,
+      };
+    }
+    function openCreateRewardForm(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      openRewardForm({
+        data: new Reward(),
+        settings: new SpawnCreatureData(),
+      });
+      return false;
+    }
+    function openUpdateRewardForm(e, reward) {
+      e.preventDefault();
+      e.stopPropagation();
+      openRewardForm(reward);
+      return false;
+    }
+    async function openDeleteRewardForm(e, reward) {
+      if (window.confirm(`Are you sure you want to delete reward "${reward.data.title}"`)) {
+        let response = await fetch("/rewards/" + reward.data.id, {
+          method: "DELETE",
+        });
+        if (response.status === 200) {
+          await loadRewards();
+        }
+      }
+    }
+    function openRewardForm(reward) {
+      populateRewardDataForm(reward.data);
+      let select = document.getElementById("rewardTypes");
+      populateTypeSelect(select, rewardTypes, 0);
+      if (reward.settings != null) {
+        select.selectedIndex = reward.settings.action;
+      } else {
+        select.selectedIndex = 0;
+      }
+      rewardTypeChanged(reward.settings);
+      let form = document.getElementById("rewardForm");
+      form.style.display = "";
+    }
+    function populateTypeSelect(select, itemList, selectedIndex) {
+      let options = itemList.map((item, index) => {
+        let option = document.createElement("option");
+        option.label = item.label;
+        option.value = index.toString();
+        option.selected = index === selectedIndex;
+        return option;
+      });
+      select.replaceChildren(...options);
+    }
+    function populateRewardDataForm(rewardData) {
+      let rewardTitle = document.getElementById("rewardTitle");
+      rewardTitle.value = rewardData.title;
+      let rewardId = document.getElementById("rewardId");
+      rewardId.value = rewardData.id;
+      let rewardCost = document.getElementById("rewardCost");
+      rewardCost.value = rewardData.cost;
+      let rewardPrompt = document.getElementById("rewardPrompt");
+      rewardPrompt.value = rewardData.prompt;
+      let rewardUserInputRequired = document.getElementById("rewardUserInputRequired");
+      rewardUserInputRequired.checked = rewardData.isUserInputRequired;
+      let rewardSkipRequestQueue = document.getElementById("rewardSkipRequestQueue");
+      rewardSkipRequestQueue.checked = rewardData.shouldRedemptionsSkipRequestQueue;
+    }
+    function rewardTypeChanged(rewardSettings) {
+      let row = document.getElementById("rewardTypeRow");
+      while (row.nextSibling) {
+        row.nextSibling.remove();
+      }
+      let select = document.getElementById("rewardTypes");
+      if (select.selectedOptions[0].value === "2") {
+        let form = createSpawnForm(rewardSettings || new SpawnCreatureData());
+        row.parentNode.append(form);
+      }
+    }
+    function drawRewards(rewards) {
+      let table = document.getElementById("rewards");
+      let tbody = table.getElementsByTagName("tbody")[0];
+      let rows;
+      if (rewards.length > 0) {
+        rows = rewards.map(reward => {
+          let row = document.createElement("tr");
+          
+          let toggleCell = document.createElement("td");
+          if (reward.isManagable) {
+            let toggle = document.createElement("input");
+            toggle.type = "checkbox";
+            toggle.checked = reward.data.is_enabled;
+            toggle.addEventListener("click", (e) => toggleReward(reward));
+            toggleCell.appendChild(toggle);
+          }
+          row.appendChild(toggleCell);
+          
+          let costCell = document.createElement("td");
+          costCell.appendChild(document.createTextNode(reward.data.cost));
+          row.appendChild(costCell);
+          
+          let titleCell = document.createElement("td");
+          titleCell.appendChild(document.createTextNode(reward.data.title));
+          row.appendChild(titleCell);
+          
+          let editCell = document.createElement("td");
+          if (reward.isManagable) {
+            let button = document.createElement("button");
+            button.textContent = "Edit";
+            button.addEventListener("click", (e) => openUpdateRewardForm(e, reward));
+            editCell.appendChild(button);
+          }
+          row.appendChild(editCell);
+          
+          let deleteCell = document.createElement("td");
+          if (reward.isManagable) {
+            let button = document.createElement("button");
+            button.textContent = "Delete";
+            button.addEventListener("click", (e) => openDeleteRewardForm(e, reward));
+            deleteCell.appendChild(button);
+          }
+          row.appendChild(deleteCell);
+          
+          return row;
+        });
+      } else {
+        let row = document.createElement("tr");
+        let cell = document.createElement("td");
+        cell.colSpan = 4;
+        cell.appendChild(document.createTextNode("No rewards"));
+        rows = [row];
+      }
+      tbody.replaceChildren(...rows);
+    }
+    function createSpawnForm(spawnData) {
+      let template = document.getElementById("spawnForm");
+      let form = template.content.cloneNode(true);
+      
+      let creatureTypeSelect = form.querySelector("#creatureType");
+      populateCreaturesSelect(creatureTypeSelect, creatures, spawnData.creature);
+
+      let creatureLevelInput = form.querySelector("#creatureLevel");
+      creatureLevelInput.value = spawnData.level;
+
+      let creatureCountInput = form.querySelector("#creatureCount");
+      creatureCountInput.value = spawnData.count;
+
+      let creatureDistanceInput = form.querySelector("#creatureDistance");
+      creatureDistanceInput.value = spawnData.distance;
+
+      let creatureTamedCheckbox = form.querySelector("#creatureTamed");
+      creatureTamedCheckbox.value = spawnData.tamed;
+
+      return form;
+    }
+    function populateCreaturesSelect(select, itemList, selectedIndex) {
+      let options = itemList.map((item, index) => {
+        let option = document.createElement("option");
+        option.label = item;
+        option.value = index.toString();
+        option.selected = index === selectedIndex;
+        return option;
+      });
+      select.replaceChildren(...options);
+    }
+
+    const rewardTypes = [{
+      type: "none",
+      label: "None",
+      title: "No action set",
+    }, {
+      type: "raven",
+      label: "Raven messenger",
+      title: "Relays a message through the raven",
+    }, {
+      type: "spawn",
+      label: "Spawn creature",
+      title: "Spawns a creature near the player",
+    }, {
+      type: "hud",
+      label: "HUD message",
+      title: "Relays a message through the chat window",
+    }, {
+      type: "event",
+      label: "Start event",
+      title: "Triggers a new event like 'You are being hunted'",
+    }, {
+      type: "environment",
+      label: "Set environment",
+      title: "Changes the weather in game",
+    }, {
+      type: "player",
+      label: "Player action",
+      title: "Player buffs and debuffs",
+    }];
+    const creatures = [
+      "Blob",
+      "BlobElite",
+      "Boar",
+      "Crow",
+      "Deathsquito",
+      "Deer",
+      "Draugr",
+      "Draugr_Elite",
+      "Draugr_Ranged",
+      "Fenring",
+      "FireFlies",
+      "Fish1",
+      "Fish2",
+      "Fish3",
+      "Ghost",
+      "Goblin",
+      "GoblinArcher",
+      "GoblinBrute",
+      "GoblinShaman",
+      "Greydwarf",
+      "Greydwarf_Elite",
+      "Greydwarf_Shaman",
+      "Greyling",
+      "Hatchling",
+      "Leech",
+      "Leviathan",
+      "Lox",
+      "Neck",
+      "Seagal",
+      "Serpent",
+      "Skeleton",
+      "Skeleton_NoArcher",
+      "Skeleton_Poison",
+      "StoneGolem",
+      "Surtling",
+      "Troll",
+      "Wolf",
+      "Wraith",
+      "Eikthyr",
+      "gd_king",
+      "Bonemass",
+      "Dragon",
+      "GoblinKing",
+    ];
+
+    const untamableCreatures = [
+      "Crow",
+      "Deer",
+      "Fish1",
+      "Fish2",
+      "Fish3",
+      "Fish4_cave",
+      "Gull",
+      "Leviathan",
+      "Odin",
+      "Eikthyr",
+      "gd_king",
+      "Bonemass",
+      "Dragon",
+      "GoblinKing",
+    ];
+
+    class Reward {
+      title = "";
+      cost = 1;
+      prompt = undefined;
+      is_user_input_required = false;
+      should_redemptions_skip_request_queue = false;
+      is_enabled = true;
+    }
+    class SpawnCreatureData {
+      action = 2;
+      creature = 0;
+      level = 1;
+      count = 1;
+      distance = 100;
+      tamed = false;
+    }
+
+    (function () {
+      loadRewards();
+    }());
+  </script>
+</body>
+
+</html>

@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using ValheimTwitch.Gui;
 using ValheimTwitch.Helpers;
 using ValheimTwitch.Twitch.PubSub.Messages;
 
@@ -8,10 +8,10 @@ namespace ValheimTwitch.Events
 {
     internal class ChangeEnvironmentAction
     {
-        internal static void Run(Redemption redemption, JToken data)
+        internal static void Run(Redemption redemption, EnvironmentData data)
         {
-            var name = data["Name"].Value<string>();
-            var duration = data["Duration"].Value<int>();
+            var name = data.Name;
+            var duration = data.Duration;
 
             if (name == "Reset to default")
                 name = "";

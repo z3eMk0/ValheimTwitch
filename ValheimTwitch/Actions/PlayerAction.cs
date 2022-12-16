@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
+using ValheimTwitch.Gui;
 using ValheimTwitch.Patches;
 using ValheimTwitch.Twitch.PubSub.Messages;
 
@@ -7,9 +7,9 @@ namespace ValheimTwitch.Events
 {
     internal class PlayerAction
     {
-        internal static void Run(Redemption redemption, JToken data)
+        internal static void Run(Redemption redemption, PlayerData data)
         {
-            var name = data["Name"].Value<string>();
+            var name = data.Name;
 
             switch (name)
             {

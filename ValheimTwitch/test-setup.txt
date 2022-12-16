@@ -1,0 +1,29 @@
+﻿Download Twich CLI from https://dev.twitch.tv/docs/cli
+
+Using the mock generate sample data "twitch mock-api generate". Info at https://dev.twitch.tv/docs/cli/mock-api-command
+Save the ids of the sample client and broadracster generated with this command.
+
+Start the mock server "twitch mock-api start"
+
+Get the sample generated client from http://localhost:8080/units/clients
+
+Getting access token for the client
+curl -X POST 'http://localhost:8080/auth/token?client_id=03a187cd309b5867104b862dd0f2ae&client_secret=0983d0fd4dc1b3b5e695b9dc73ff9d&grant_type=client_credentials'
+{"access_token":"7f0e981278c1568","refresh_token":"","expires_in":86399,"scope":[],"token_type":"bearer"}
+
+Getting access token for the generated uesr (you can get the user id from the output of the "generate" command)
+curl -X POST 'http://localhost:8080/auth/authorize?client_id=03a187cd309b5867104b862dd0f2ae&client_secret=0983d0fd4dc1b3b5e695b9dc73ff9d&grant_type=user_token&user_id=70848800&scope=user:read:email%20channel:read:redemptions%20channel:manage:redemptions'
+{"access_token":"e8004a30a4b16c8","refresh_token":"","expires_in":86399,"scope":["user:read:email","channel:read:redemptions","channel:manage:redemptions"],"token_type":"bearer"}
+
+Creating a sample channel reward
+curl -X POST 'http://localhost:8080/mock/channel_points/custom_rewards?broadcaster_id=70848800' \
+-H 'client-id: 03a187cd309b5867104b862dd0f2ae' \
+-H 'Authorization: Bearer a45921a5b12339b' \
+-H 'Content-Type: application/json' \
+-d '{
+  "title":"game analysis 1v1",
+  "cost":50000
+}'
+
+Triggering redemption of a channel reward using the docs https://dev.twitch.tv/docs/cli/event-command
+twitch event trigger add-redemption -t 70848800 -i 14a81a9c-d959-2097-c9ee-674a28ab463f -F http://localhost:42248/eventsub/

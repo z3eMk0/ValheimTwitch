@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
+using ValheimTwitch.Gui;
 using ValheimTwitch.Helpers;
 using ValheimTwitch.Patches;
 using ValheimTwitch.Twitch.PubSub.Messages;
@@ -7,20 +9,20 @@ namespace ValheimTwitch.Events
 {
     internal class SpawnCreatureAction
     {
-        internal static void Run(Redemption redemption, JToken data)
+        internal static void Run(Redemption redemption, SpawnCreatureData data)
         {
-            var creature = data["Creature"].Value<int>();
-            var level = data["Level"].Value<int>();
-            var count = data["Count"].Value<int>();
-            var offset = data["Distance"].Value<int>();
-            var tamed = data["Tamed"]?.Value<bool>();
+            var creature = data.Creature;
+            var level = data.Level;
+            var count = data.Count;
+            var offset = data.Distance;
+            var tamed = data.Tamed;
 
             var name = redemption.User.DisplayName;
             var type = SpawnCreatureSettings.creatures[creature];
 
             for (int i = 0; i < count; i++)
             {
-                ConsoleUpdatePatch.AddAction(() => Prefab.Spawn(type, level, offset, tamed??false, name));
+                ConsoleUpdatePatch.AddAction(() => Prefab.Spawn(type, level, offset, tamed, name));
             }
         }
     }

@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using ValheimTwitch.Gui;
 using ValheimTwitch.Twitch.PubSub.Messages;
 
 namespace ValheimTwitch.Events
@@ -15,13 +15,13 @@ namespace ValheimTwitch.Events
             }
         }
 
-        public static void Run(Redemption redemption, JToken data)
+        public static void Run(Redemption redemption, HUDMessageData data)
         {
-            var position = data["Position"].Value<int>();
+            var isCentered = data.IsCentered;
             var user = redemption.User.DisplayName;
-            var text = redemption.UserInput??"";
+            var text = redemption.UserInput ?? "";
 
-            PlayerMessage($"<{user}> {text}", position == 1);
+            PlayerMessage($"<{user}> {text}", isCentered);
         }
     }
 }

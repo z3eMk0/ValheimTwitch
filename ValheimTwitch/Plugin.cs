@@ -7,6 +7,7 @@ using System.Net;
 using System.Threading;
 using UnityEngine.SceneManagement;
 using ValheimTwitch.Events;
+using ValheimTwitch.Gui;
 using ValheimTwitch.Helpers;
 using ValheimTwitch.Patches;
 using ValheimTwitch.Twitch.API.Helix;
@@ -20,10 +21,11 @@ namespace ValheimTwitch
         public const string GUID = "dev.skarab42.valheim.twitch";
         public const string NAME = "Valheim Twitch";
         public const string LABEL = "ValheimTwitch";
-        public const string VERSION = "1.5.1";
+        public const string VERSION = "2.0.0";
 
         public const string GITHUB_RELEASE_URL = "https://api.github.com/repos/skarab42/ValheimTwitch/tags";
-        public const string TWITCH_APP_CLIENT_ID = "5b9v1vm0jv7kx9afpmz0ylb3lp7k9w";
+        //public const string TWITCH_APP_CLIENT_ID = "5b9v1vm0jv7kx9afpmz0ylb3lp7k9w";
+        public const string TWITCH_APP_CLIENT_ID = "03a187cd309b5867104b862dd0f2ae";
         public const string TWITCH_REDIRECT_HOST = "localhost";
         public const string TWITCH_SKARAB42_ID = "485824438"; //"18615783"; //
         public const int TWITCH_REDIRECT_PORT = 42224;
@@ -46,13 +48,16 @@ namespace ValheimTwitch
 
         private static Plugin instance;
 
+        internal static InitialScreen initialScreen;
+
         public static Plugin Instance
         {
             get => instance;
             private set { instance = value; }
         }
 
-        private Plugin() {
+        private Plugin() : base()
+        {
             EmbeddedAsset.LoadAssembly("Assets.IpMatcher.dll");
             EmbeddedAsset.LoadAssembly("Assets.netstandard.dll");
             EmbeddedAsset.LoadAssembly("Assets.Newtonsoft.Json.dll");
@@ -87,13 +92,39 @@ namespace ValheimTwitch
             SceneManager.LoadScene("start");
 #endif
 
+            Config.SaveOnConfigSet = true;
+            Config.ConfigReloaded += (object sender, EventArgs e) =>
+            {
+                Log.Info("ConfigReloaded");
+                RewardsConfig.Load();
+            };
+            //SynchronizationManager.OnConfigurationSynchronized += (obj, attr) =>
+            //{
+            //    if (attr.InitialSynchronization)
+            //    {
+            //        RewardsConfig.Load();
+            //        Jotunn.Logger.LogMessage("Initial Config sync event received");
+            //    }
+            //    else
+            //    {
+            //        RewardsConfig.Load();
+            //        Jotunn.Logger.LogMessage("Config sync event received");
+            //    }
+            //};
+            //SynchronizationManager.Instance.Init();
             RewardsConfig.Load();
+            //Config.Reload();
             TwitchConnect();
 
             SceneManager.activeSceneChanged += OnSceneChanged;
 
             Harmony harmony = new Harmony(GUID);
             harmony.PatchAll();
+
+            initialScreen = new InitialScreen();
+            initialScreen.Start();
+
+            new Twitch.Test.RedeemServer().Start();
         }
 
         private void OnToken(object sender, TokenArgs e)
@@ -139,6 +170,12 @@ namespace ValheimTwitch
                 tokenProvider.OnToken += OnToken;
                 tokenProvider.OnError += OnTokenError;
 
+                PluginConfig.SetObject("twitchAuthToken", new
+                {
+                    accessToken = "a45921a5b12339b",
+                    refreshToken = ""
+                });
+
                 var token = PluginConfig.GetObject("twitchAuthToken");
 
                 if (token == null)
@@ -168,6 +205,7 @@ namespace ValheimTwitch
                 Log.Info($"- isPatner: {isPatner}");
 
                 if (twitchClient.HasChannelPoints()) {
+                    //UpdateRwardsList(() => RewardsConfig.Load());
                     UpdateRwardsList();
 
                     twitchPubSubClient.OnRewardRedeemed += OnRewardRedeemed;
@@ -189,6 +227,7 @@ namespace ValheimTwitch
             {
                 twitchCustomRewards = twitchClient?.GetCustomRewards();
                 twitchRewards = twitchClient?.GetRewards();
+                RewardsConfig.Sync(twitchRewards.Data);
                 FejdStartupUpdatePatch.updateUI = true;
 
                 if (callback != null)
@@ -258,7 +297,7 @@ namespace ValheimTwitch
 
             Log.Info($"OnRewardRedeemed: {reward.Title}");
 
-            var action = RewardsConfig.Get(reward.Id);
+            var action = RewardsConfig.GetSettings(reward.Id);
 
             if (action == null)
                 return;
