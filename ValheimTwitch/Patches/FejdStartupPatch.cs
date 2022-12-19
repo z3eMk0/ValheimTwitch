@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -153,7 +154,7 @@ namespace ValheimTwitch.Patches
                     //Log.Info($"Reward: {reward.Title} - custom: {customReward}");
 
                     var title = reward.Title;
-                    var data = RewardsConfig.Get(reward.Id);
+                    var data = JToken.FromObject(new object());//RewardsConfig.Get(reward.Id);
                     var color = Colors.FromHex(reward.BackgroundColor);
                     var texture = TextureLoader.LoadFromURL((reward.Image ?? reward.DefaultImage).Url4x);
                     var rewardGridItem = new RewardGridItem(reward.Id, title, color, texture, customReward, data);

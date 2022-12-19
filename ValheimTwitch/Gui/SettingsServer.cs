@@ -162,11 +162,7 @@ namespace ValheimTwitch.Gui
             var body = request.DataAsJsonObject<JToken>();
             Log.Info("data settings action " + body.ToString());
             var dataJSON = body["settings"];
-            var data = dataJSON.ToObject<SettingsMessageData>();
-            if (data.Action == 2)
-            {
-                return dataJSON.ToObject<SpawnCreatureData>();
-            }
+            var data = Model.FromToken(dataJSON);
             return data;
         }
         private void SaveRewardSettings(SettingsChangedArgs e)

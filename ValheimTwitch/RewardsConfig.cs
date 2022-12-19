@@ -1,6 +1,7 @@
 ﻿using BepInEx.Configuration;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using ValheimTwitch.Gui;
 using ValheimTwitch.Twitch.API.Helix;
@@ -9,16 +10,14 @@ namespace ValheimTwitch
 {
     static class RewardsConfig
     {
-        private const string REWARDS_SECTION = "rewards";
+        private const string REWARDS_SECTION = "Rewards";
         private static Dictionary<string, JToken> rewards = new Dictionary<string, JToken>();
 
         public static void Load()
         {
             Log.Info("RewardsConfig.Load()");
-            var entriesProperty = Plugin.Instance.Config.GetType().GetProperty("OrphanedEntries", BindingFlags.Instance | BindingFlags.NonPublic);
-            var entries = (Dictionary<ConfigDefinition, string>)entriesProperty.GetValue(Plugin.Instance.Config);
-            var keys = new List<ConfigDefinition>(entries.Keys);
-            keys.AddRange(Plugin.Instance.Config.Keys);
+            var keys = GetConfigDefinitions();
+            Dictionary<string, JToken> tokens = new Dictionary<string, JToken>(16); 
             foreach (var key in keys)
             {
                 Log.Info($"Config entry iterated {key.Key}");
@@ -38,14 +37,14 @@ namespace ValheimTwitch
 
         public static void Sync(List<Reward> twitchRewards)
         {
-            foreach (var twichReward in twitchRewards)
-            {
-                if (!rewards.ContainsKey(twichReward.Id))
-                {
-                    Delete(twichReward.Id, false);
-                }
-            }
-            Save();
+            //foreach (var twichReward in twitchRewards)
+            //{
+            //    if (!rewards.ContainsKey(twichReward.Id))
+            //    {
+            //        Delete(twichReward.Id, false);
+            //    }
+            //}
+            //Save();
         }
 
         public static void Save()
@@ -64,14 +63,6 @@ namespace ValheimTwitch
                 //bind.Value = entry.Value.ToString(Newtonsoft.Json.Formatting.None);
             }
             Plugin.Instance.Config.Save();
-            //PluginConfig.SetObject("rewards", rewards);
-        }
-
-        public static JToken Get(string key)
-        {
-            JToken data;
-            rewards.TryGetValue(key, out data);
-            return data;
         }
 
         public static SettingsMessageData GetSettings(string key)
@@ -88,8 +79,7 @@ namespace ValheimTwitch
         {
             rewards[key] = JToken.FromObject(data);
 
-            var bind = Plugin.Instance.Config.Bind(
-                    REWARDS_SECTION, key, JToken.FromObject(new SettingsMessageData()).ToString(Newtonsoft.Json.Formatting.None));
+            var bind = Plugin.Instance.Config.Bind(REWARDS_SECTION, key, "");
             bind.Value = rewards[key].ToString(Newtonsoft.Json.Formatting.None);
 
             if (save)
@@ -98,10 +88,25 @@ namespace ValheimTwitch
 
         public static void Delete(string key, bool save = true)
         {
-            Plugin.Instance.Config.Remove(new ConfigDefinition(REWARDS_SECTION, key));
+            var configDefinition = new ConfigDefinition(REWARDS_SECTION, key);
+            Plugin.Instance.Config.Remove(configDefinition);
+            GetOrphanedEntries().Remove(configDefinition);
 
             if (save)
                 Save();
+        }
+
+        private static List<ConfigDefinition> GetConfigDefinitions()
+        {
+            var keys = new List<ConfigDefinition>(GetOrphanedEntries().Keys);
+            keys.AddRange(Plugin.Instance.Config.Keys);
+            return keys;
+        }
+
+        private static Dictionary<ConfigDefinition, string> GetOrphanedEntries()
+        {
+            var entriesProperty = Plugin.Instance.Config.GetType().GetProperty("OrphanedEntries", BindingFlags.Instance | BindingFlags.NonPublic);
+            return (Dictionary<ConfigDefinition, string>)entriesProperty.GetValue(Plugin.Instance.Config);
         }
     }
 }

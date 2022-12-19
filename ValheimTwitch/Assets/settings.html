@@ -169,7 +169,7 @@
       }
     }
     async function toggleReward(reward) {
-      reward.data.is_enabled = !reward.data.is_enabled
+      reward.data.is_enabled = !reward.data.is_enabled;
       let response = await fetch("/rewards/" + reward.data.id, {
           method: "PUT",
           headers: {
@@ -325,11 +325,11 @@
       let rewardTitle = document.getElementById("rewardTitle");
       rewardTitle.value = rewardData.title;
       let rewardId = document.getElementById("rewardId");
-      rewardId.value = rewardData.id;
+      rewardId.value = rewardData.id || "";
       let rewardCost = document.getElementById("rewardCost");
       rewardCost.value = rewardData.cost;
       let rewardPrompt = document.getElementById("rewardPrompt");
-      rewardPrompt.value = rewardData.prompt;
+      rewardPrompt.value = rewardData.prompt || "";
       let rewardUserInputRequired = document.getElementById("rewardUserInputRequired");
       rewardUserInputRequired.checked = rewardData.isUserInputRequired;
       let rewardSkipRequestQueue = document.getElementById("rewardSkipRequestQueue");
@@ -598,7 +598,7 @@
       prompt = undefined;
       is_user_input_required = false;
       should_redemptions_skip_request_queue = false;
-      is_enabled = true;
+      is_enabled = false;
     }
     class RavenMessageData {
       action = 1;
