@@ -18,11 +18,10 @@ namespace ValheimTwitch.Events
             var tamed = data.Tamed;
 
             var name = redemption.User.DisplayName;
-            var type = SpawnCreatureSettings.creatures[creature];
 
             for (int i = 0; i < count; i++)
             {
-                ConsoleUpdatePatch.AddAction(() => Prefab.Spawn(type, level, offset, tamed, name));
+                ConsoleUpdatePatch.AddAction(() => Prefab.Spawn(creature, level, offset, tamed, name));
             }
         }
     }

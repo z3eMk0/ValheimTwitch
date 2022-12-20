@@ -111,5 +111,16 @@ namespace ValheimTwitch.Helpers
                 Log.Error(ex.ToString());
             }
         }
+    
+        public static void ListPrefabs()
+        {
+            var prefabs = ZNetScene.instance.GetPrefabNames();
+            var buffer = "";
+            foreach (var prefab in prefabs)
+            {
+                buffer += prefab + ",";
+            }
+            Log.Info("Prefabs: " + buffer);
+        }
     }
 }

@@ -47,5 +47,15 @@ namespace ValheimTwitch.Events
                 Log.Warning(ex.StackTrace);
             }
         }
+
+        public static void ListEnvironments()
+        {
+            var list = "";
+            foreach(var env in EnvMan.instance.m_environments)
+            {
+                list += env.m_name + ",";
+            }
+            Log.Info("Environment list: " + list);
+        }
     }
 }

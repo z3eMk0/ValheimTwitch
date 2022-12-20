@@ -12,33 +12,26 @@ namespace ValheimTwitch.Gui
         {
             if (token != null && token["action"] != null)
             {
-                var data = token.ToObject<SettingsMessageData>();
-                switch (data.Action)
+                var action = token["action"].ToString();
+                switch (action)
                 {
-                    case 0:
-                        break;
-                    case 1:
-                        data = token.ToObject<RavenMessageData>();
-                        break;
-                    case 2:
-                        data = token.ToObject<SpawnCreatureData>();
-                        break;
-                    case 3:
-                        data = token.ToObject<HUDMessageData>();
-                        break;
-                    case 4:
-                        data = token.ToObject<RandomEventData>();
-                        break;
-                    case 5:
-                        data = token.ToObject<EnvironmentData>();
-                        break;
-                    case 6:
-                        data = token.ToObject<PlayerData>();
-                        break;
+                    case SettingsMessageData.ACTION_TYPE:
+                        return new SettingsMessageData();
+                    case RavenMessageData.ACTION_TYPE:
+                        return token.ToObject<RavenMessageData>();
+                    case SpawnCreatureData.ACTION_TYPE:
+                        return token.ToObject<SpawnCreatureData>();
+                    case HUDMessageData.ACTION_TYPE:
+                        return token.ToObject<HUDMessageData>();
+                    case RandomEventData.ACTION_TYPE:
+                        return token.ToObject<RandomEventData>();
+                    case EnvironmentData.ACTION_TYPE:
+                        return token.ToObject<EnvironmentData>();
+                    case PlayerData.ACTION_TYPE:
+                        return token.ToObject<PlayerData>();
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
-                return data;
             }
             return null;
         }
@@ -73,15 +66,26 @@ namespace ValheimTwitch.Gui
 
     public class SettingsMessageData
     {
+        public const string ACTION_TYPE = "none";
         [JsonProperty("action")]
-        public int Action = 0;
+        public virtual string Action
+        {
+            get
+            {
+                return ACTION_TYPE;
+            }
+        }
     }
 
     public class RavenMessageData : SettingsMessageData
     {
-        public RavenMessageData()
+        public new const string ACTION_TYPE = "raven";
+        public override string Action
         {
-            this.Action = 1;
+            get
+            {
+                return ACTION_TYPE;
+            }
         }
 
         [JsonProperty("isMunin")]
@@ -90,13 +94,17 @@ namespace ValheimTwitch.Gui
 
     public class SpawnCreatureData : SettingsMessageData
     {
-        public SpawnCreatureData()
+        public new const string ACTION_TYPE = "spawn";
+        public override string Action
         {
-            this.Action = 2;
+            get
+            {
+                return ACTION_TYPE;
+            }
         }
 
         [JsonProperty("creature")]
-        public int Creature { set; get; }
+        public string Creature { set; get; }
 
         [JsonProperty("level")]
         public int Level { set; get; }
@@ -113,20 +121,28 @@ namespace ValheimTwitch.Gui
 
     public class HUDMessageData : SettingsMessageData
     {
-        public HUDMessageData()
+        public new const string ACTION_TYPE = "message";
+        public override string Action
         {
-            this.Action = 3;
+            get
+            {
+                return ACTION_TYPE;
+            }
         }
-        
+
         [JsonProperty("isCentered")]
         public bool IsCentered { set; get; }
     }
 
     public class RandomEventData : SettingsMessageData
     {
-        public RandomEventData()
+        public new const string ACTION_TYPE = "event";
+        public override string Action
         {
-            this.Action = 4;
+            get
+            {
+                return ACTION_TYPE;
+            }
         }
         [JsonProperty("eventName")]
         public string EventName { set; get; }
@@ -138,9 +154,13 @@ namespace ValheimTwitch.Gui
 
     public class EnvironmentData : SettingsMessageData
     {
-        public EnvironmentData()
+        public new const string ACTION_TYPE = "environment";
+        public override string Action
         {
-            this.Action = 5;
+            get
+            {
+                return ACTION_TYPE;
+            }
         }
         [JsonProperty("name")]
         public string Name { set; get; }
@@ -150,9 +170,13 @@ namespace ValheimTwitch.Gui
 
     public class PlayerData : SettingsMessageData
     {
-        public PlayerData()
+        public new const string ACTION_TYPE = "player";
+        public override string Action
         {
-            this.Action = 6;
+            get
+            {
+                return ACTION_TYPE;
+            }
         }
         [JsonProperty("name")]
         public string Name { set; get; }

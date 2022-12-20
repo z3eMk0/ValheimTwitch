@@ -85,19 +85,19 @@
     </tr>
     <tr>
       <td>Level</td>
-      <td><input id="creatureLevel" type="number" value="1"></td>
+      <td><input id="creatureLevel" type="number"></td>
     </tr>
     <tr>
       <td>Count</td>
-      <td><input id="creatureCount" type="number" value="1"></td>
+      <td><input id="creatureCount" type="number"></td>
     </tr>
     <tr>
       <td>Distance</td>
-      <td><input id="creatureDistance" type="number" value="100"></td>
+      <td><input id="creatureDistance" type="number"></td>
     </tr>
     <tr>
       <td>Tamed</td>
-      <td><input id="creatureTamed" type="checkbox" value="false"></td>
+      <td><input id="creatureTamed" type="checkbox"></td>
     </tr>
   </template>
   <template id="messageForm">
@@ -171,16 +171,16 @@
     async function toggleReward(reward) {
       reward.data.is_enabled = !reward.data.is_enabled;
       let response = await fetch("/rewards/" + reward.data.id, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(reward),
-        });
-        if (response.status === 200) {
-          //TODO ip: update only the checkbox
-          await loadRewards();
-        }
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(reward),
+      });
+      if (response.status === 200) {
+        //TODO ip: update only the checkbox
+        await loadRewards();
+      }
     }
     function getReward() {
       let data = new Reward();
@@ -199,79 +199,24 @@
       };
     }
     function getSettings(action) {
-      if (action === "1") {
-        return getRavenSettings();
+      if (action === rewardTypes.raven.value) {
+        return RavenForm.getSettings();
       }
-      if (action === "2") {
-        return getSpawnSettings();
+      if (action === rewardTypes.spawn.value) {
+        return SpawnForm.getSettings();
       }
-      if (action === "3") {
-        return getMessageSettings();
+      if (action === rewardTypes.message.value) {
+        return MessageForm.getSettings();
       }
-      if (action === "4") {
-        return getEventSettings();
+      if (action === rewardTypes.event.value) {
+        return EventForm.getSettings();
       }
-      if (action === "5") {
-        return getEnvironmentSettings();
+      if (action === rewardTypes.environment.value) {
+        return EnvironmentForm.getSettings();
       }
-      if (action === "6") {
-        return getPlayerSettings();
+      if (action === rewardTypes.player.value) {
+        return PlayerForm.getSettings();
       }
-    }
-    function getRavenSettings() {
-      let settings = new RavenMessageData();
-      settings.isMunin = document.getElementById("isMunin").checked;
-      return settings;
-    }
-    function getSpawnSettings() {
-      let settings = new SpawnCreatureData();
-      settings.creature = Number.parseInt(document.getElementById("creatureType").selectedOptions[0].value, 10);
-      let level = Number.parseInt(document.getElementById("creatureLevel").value, 10);
-      if (!Number.isNaN(level)) {
-        settings.level = level;
-      }
-      let count = Number.parseInt(document.getElementById("creatureCount").value, 10);
-      if (!Number.isNaN(count)) {
-        settings.count = count;
-      }
-      let distance = Number.parseInt(document.getElementById("creatureDistance").value, 10);
-      if (!Number.isNaN(distance)) {
-        settings.distance = distance;
-      }
-      settings.tamed = document.getElementById("creatureTamed").checked;
-      return settings;
-    }
-    function getMessageSettings() {
-      let settings = new HUDMessageData();
-      settings.isCentered = document.getElementById("isCentered").checked;
-      return settings;
-    }
-    function getEventSettings() {
-      let settings = new RandomEventData();
-      settings.eventName = document.getElementById("eventName").selectedOptions[0].value;
-      let distance = Number.parseInt(document.getElementById("eventDistance").value, 10);
-      if (!Number.isNaN(distance)) {
-        settings.distance = distance;
-      }
-      let duration = Number.parseInt(document.getElementById("eventDuration").value, 10);
-      if (!Number.isNaN(duration)) {
-        settings.duration = duration;
-      }
-      return settings;
-    }
-    function getEnvironmentSettings() {
-      let settings = new EnvironmentData();
-      settings.name = document.getElementById("environmentName").selectedOptions[0].value;
-      let duration = Number.parseInt(document.getElementById("environmentDuration").value, 10);
-      if (!Number.isNaN(duration)) {
-        settings.duration = duration;
-      }
-      return settings;
-    }
-    function getPlayerSettings() {
-      let settings = new PlayerData();
-      settings.name = document.getElementById("actionName").selectedOptions[0].value;
-      return settings;
     }
     function openCreateRewardForm(e) {
       e.preventDefault();
@@ -303,7 +248,7 @@
       let select = document.getElementById("rewardTypes");
       populateTypeSelect(select, rewardTypes, 0);
       if (reward.settings != null) {
-        select.selectedIndex = reward.settings.action;
+        select.selectedIndex = Object.getOwnPropertyNames(rewardTypes).indexOf(reward.settings.action);
       } else {
         select.selectedIndex = 0;
       }
@@ -312,10 +257,12 @@
       form.style.display = "";
     }
     function populateTypeSelect(select, itemList, selectedIndex) {
-      let options = itemList.map((item, index) => {
+      let options = Object.getOwnPropertyNames(itemList).map((prop, index) => {
+        item = itemList[prop];
         let option = document.createElement("option");
         option.label = item.label;
-        option.value = index.toString();
+        option.value = item.value;
+        option.title = item.title;
         option.selected = index === selectedIndex;
         return option;
       });
@@ -331,9 +278,9 @@
       let rewardPrompt = document.getElementById("rewardPrompt");
       rewardPrompt.value = rewardData.prompt || "";
       let rewardUserInputRequired = document.getElementById("rewardUserInputRequired");
-      rewardUserInputRequired.checked = rewardData.isUserInputRequired;
+      rewardUserInputRequired.checked = rewardData.is_user_input_required;
       let rewardSkipRequestQueue = document.getElementById("rewardSkipRequestQueue");
-      rewardSkipRequestQueue.checked = rewardData.shouldRedemptionsSkipRequestQueue;
+      rewardSkipRequestQueue.checked = rewardData.should_redemptions_skip_request_queue;
     }
     function rewardTypeChanged(rewardSettings) {
       let row = document.getElementById("rewardTypeRow");
@@ -342,18 +289,18 @@
       }
       let select = document.getElementById("rewardTypes");
       let form;
-      if (select.selectedOptions[0].value === "1") {
-        form = createRavenForm(rewardSettings || new RavenMessageData());
-      } else if (select.selectedOptions[0].value === "2") {
-        form = createSpawnForm(rewardSettings || new SpawnCreatureData());
-      } else if (select.selectedOptions[0].value === "3") {
-        form = createMessageForm(rewardSettings || new HUDMessageData());
-      } else if (select.selectedOptions[0].value === "4") {
-        form = createEventForm(rewardSettings || new RandomEventData());
-      } else if (select.selectedOptions[0].value === "5") {
-        form = createEnvironmentForm(rewardSettings || new EnvironmentData());
-      } else if (select.selectedOptions[0].value === "6") {
-        form = createPlayerForm(rewardSettings || new PlayerData());
+      if (select.selectedOptions[0].value === rewardTypes.raven.value) {
+        form = RavenForm.create(rewardSettings || new RavenMessageData());
+      } else if (select.selectedOptions[0].value === rewardTypes.spawn.value) {
+        form = SpawnForm.create(rewardSettings || new SpawnCreatureData());
+      } else if (select.selectedOptions[0].value === rewardTypes.message.value) {
+        form = MessageForm.create(rewardSettings || new HUDMessageData());
+      } else if (select.selectedOptions[0].value === rewardTypes.event.value) {
+        form = EventForm.create(rewardSettings || new RandomEventData());
+      } else if (select.selectedOptions[0].value === rewardTypes.environment.value) {
+        form = EnvironmentForm.create(rewardSettings || new EnvironmentData());
+      } else if (select.selectedOptions[0].value === rewardTypes.player.value) {
+        form = PlayerForm.create(rewardSettings || new PlayerData());
       }
       if (form) {
         row.parentNode.append(form);
@@ -366,7 +313,7 @@
       if (rewards.length > 0) {
         rows = rewards.map(reward => {
           let row = document.createElement("tr");
-          
+
           let toggleCell = document.createElement("td");
           if (reward.isManagable) {
             let toggle = document.createElement("input");
@@ -376,15 +323,15 @@
             toggleCell.appendChild(toggle);
           }
           row.appendChild(toggleCell);
-          
+
           let costCell = document.createElement("td");
           costCell.appendChild(document.createTextNode(reward.data.cost));
           row.appendChild(costCell);
-          
+
           let titleCell = document.createElement("td");
           titleCell.appendChild(document.createTextNode(reward.data.title));
           row.appendChild(titleCell);
-          
+
           let editCell = document.createElement("td");
           if (reward.isManagable) {
             let button = document.createElement("button");
@@ -393,7 +340,7 @@
             editCell.appendChild(button);
           }
           row.appendChild(editCell);
-          
+
           let deleteCell = document.createElement("td");
           if (reward.isManagable) {
             let button = document.createElement("button");
@@ -402,7 +349,7 @@
             deleteCell.appendChild(button);
           }
           row.appendChild(deleteCell);
-          
+
           return row;
         });
       } else {
@@ -414,166 +361,191 @@
       }
       tbody.replaceChildren(...rows);
     }
-    function createRavenForm(ravenData) {
-      let template = document.getElementById("ravenForm");
-      let form = template.content.cloneNode(true);
+    class RavenForm {
+      static create(ravenData) {
+        let template = document.getElementById("ravenForm");
+        let form = template.content.cloneNode(true);
 
-      let isMuninCheckbox = form.querySelector("#isMunin");
-      isMuninCheckbox.checked = ravenData.isMunin;
+        let isMuninCheckbox = form.querySelector("#isMunin");
+        isMuninCheckbox.checked = ravenData.isMunin;
 
-      return form;
+        return form;
+      }
+      static getSettings() {
+        let settings = new RavenMessageData();
+        settings.isMunin = document.getElementById("isMunin").checked;
+        return settings;
+      }
     }
-    function createSpawnForm(spawnData) {
-      let template = document.getElementById("spawnForm");
-      let form = template.content.cloneNode(true);
-      
-      let creatureTypeSelect = form.querySelector("#creatureType");
-      populateCreaturesSelect(creatureTypeSelect, creatures, spawnData.creature);
+    class SpawnForm {
+      static create(spawnData) {
+        let template = document.getElementById("spawnForm");
+        let form = template.content.cloneNode(true);
 
-      let creatureLevelInput = form.querySelector("#creatureLevel");
-      creatureLevelInput.value = spawnData.level;
+        let creatureTypeSelect = form.querySelector("#creatureType");
+        populateCreaturesSelect(creatureTypeSelect, creatures, creatures.findIndex(c => c.value === spawnData.creature));
 
-      let creatureCountInput = form.querySelector("#creatureCount");
-      creatureCountInput.value = spawnData.count;
+        let creatureLevelInput = form.querySelector("#creatureLevel");
+        creatureLevelInput.value = spawnData.level;
 
-      let creatureDistanceInput = form.querySelector("#creatureDistance");
-      creatureDistanceInput.value = spawnData.distance;
+        let creatureCountInput = form.querySelector("#creatureCount");
+        creatureCountInput.value = spawnData.count;
 
-      let creatureTamedCheckbox = form.querySelector("#creatureTamed");
-      creatureTamedCheckbox.checked = spawnData.tamed;
+        let creatureDistanceInput = form.querySelector("#creatureDistance");
+        creatureDistanceInput.value = spawnData.distance;
 
-      return form;
+        let creatureTamedCheckbox = form.querySelector("#creatureTamed");
+        creatureTamedCheckbox.checked = spawnData.tamed;
+
+        return form;
+      }
+      static getSettings() {
+        let settings = new SpawnCreatureData();
+        settings.creature = document.getElementById("creatureType").selectedOptions[0].value;
+        let level = Number.parseInt(document.getElementById("creatureLevel").value, 10);
+        if (!Number.isNaN(level)) {
+          settings.level = level;
+        }
+        let count = Number.parseInt(document.getElementById("creatureCount").value, 10);
+        if (!Number.isNaN(count)) {
+          settings.count = count;
+        }
+        let distance = Number.parseInt(document.getElementById("creatureDistance").value, 10);
+        if (!Number.isNaN(distance)) {
+          settings.distance = distance;
+        }
+        settings.tamed = document.getElementById("creatureTamed").checked;
+        return settings;
+      }
     }
     function populateCreaturesSelect(select, itemList, selectedIndex) {
       let options = itemList.map((item, index) => {
         let option = document.createElement("option");
-        option.label = item;
-        option.value = index.toString();
+        option.label = item.label;
+        option.value = item.value;
         option.selected = index === selectedIndex;
         return option;
       });
       select.replaceChildren(...options);
     }
-    function createMessageForm(messageData) {
-      let template = document.getElementById("messageForm");
-      let form = template.content.cloneNode(true);
+    class MessageForm {
+      static create(messageData) {
+        let template = document.getElementById("messageForm");
+        let form = template.content.cloneNode(true);
 
-      let isCenteredCheckbox = form.querySelector("#isCentered");
-      isCenteredCheckbox.checked = messageData.isCentered;
+        let isCenteredCheckbox = form.querySelector("#isCentered");
+        isCenteredCheckbox.checked = messageData.isCentered;
 
-      return form;
+        return form;
+      }
+      static getSettings() {
+        let settings = new HUDMessageData();
+        settings.isCentered = document.getElementById("isCentered").checked;
+        return settings;
+      }
     }
-    function createEventForm(eventData) {
-      let template = document.getElementById("eventForm");
-      let form = template.content.cloneNode(true);
+    class EventForm {
+      static create(eventData) {
+        let template = document.getElementById("eventForm");
+        let form = template.content.cloneNode(true);
 
-      let eventNameSelect = form.querySelector("#eventName");
-      populateCreaturesSelect(eventNameSelect, creatures, eventData.eventName);
+        let eventNameSelect = form.querySelector("#eventName");
+        populateCreaturesSelect(eventNameSelect, creatures, eventData.eventName);
 
-      let eventDistanceInput = form.querySelector("#eventDistance");
-      eventDistanceInput.value = eventData.distance;
+        let eventDistanceInput = form.querySelector("#eventDistance");
+        eventDistanceInput.value = eventData.distance;
 
-      let eventDurationInput = form.querySelector("#eventDuration");
-      eventDurationInput.value = eventData.duration;
+        let eventDurationInput = form.querySelector("#eventDuration");
+        eventDurationInput.value = eventData.duration;
 
-      return form;
+        return form;
+      }
+      static getSettings() {
+        let settings = new RandomEventData();
+        settings.eventName = document.getElementById("eventName").selectedOptions[0].value;
+        let distance = Number.parseInt(document.getElementById("eventDistance").value, 10);
+        if (!Number.isNaN(distance)) {
+          settings.distance = distance;
+        }
+        let duration = Number.parseInt(document.getElementById("eventDuration").value, 10);
+        if (!Number.isNaN(duration)) {
+          settings.duration = duration;
+        }
+        return settings;
+      }
     }
-    function createEnvironmentForm(environmentData) {
-      let template = document.getElementById("environmentForm");
-      let form = template.content.cloneNode(true);
+    class EnvironmentForm {
+      static create(environmentData) {
+        let template = document.getElementById("environmentForm");
+        let form = template.content.cloneNode(true);
 
-      let environmentNameSelect = form.querySelector("#environmentName");
-      populateCreaturesSelect(environmentNameSelect, creatures, environmentData.name);
+        let environmentNameSelect = form.querySelector("#environmentName");
+        populateCreaturesSelect(environmentNameSelect, creatures, environmentData.name);
 
-      let environmentDurationInput = form.querySelector("#environmentDuration");
-      environmentDurationInput.value = environmentData.duration;
+        let environmentDurationInput = form.querySelector("#environmentDuration");
+        environmentDurationInput.value = environmentData.duration;
 
-      return form;
+        return form;
+      }
+      static getSettings() {
+        let settings = new EnvironmentData();
+        settings.name = document.getElementById("environmentName").selectedOptions[0].value;
+        let duration = Number.parseInt(document.getElementById("environmentDuration").value, 10);
+        if (!Number.isNaN(duration)) {
+          settings.duration = duration;
+        }
+        return settings;
+      }
     }
-    function createPlayerForm(playerData) {
-      let template = document.getElementById("playerForm");
-      let form = template.content.cloneNode(true);
+    class PlayerForm {
+      static create(playerData) {
+        let template = document.getElementById("playerForm");
+        let form = template.content.cloneNode(true);
 
-      let actionNameSelect = form.querySelector("#actionName");
-      populateCreaturesSelect(actionNameSelect, creatures, playerData.name);
+        let actionNameSelect = form.querySelector("#actionName");
+        populateCreaturesSelect(actionNameSelect, creatures, playerData.name);
 
-      return form;
+        return form;
+      }
+      static getSettings() {
+        let settings = new PlayerData();
+        settings.name = document.getElementById("actionName").selectedOptions[0].value;
+        return settings;
+      }
     }
 
-    const rewardTypes = [{
-      type: "none",
-      label: "None",
-      title: "No action set",
-    }, {
-      type: "raven",
-      label: "Raven messenger",
-      title: "Relays a message through the raven",
-    }, {
-      type: "spawn",
-      label: "Spawn creature",
-      title: "Spawns a creature near the player",
-    }, {
-      type: "hud",
-      label: "HUD message",
-      title: "Relays a message through the chat window",
-    }, {
-      type: "event",
-      label: "Start event",
-      title: "Triggers a new event like 'You are being hunted'",
-    }, {
-      type: "environment",
-      label: "Set environment",
-      title: "Changes the weather in game",
-    }, {
-      type: "player",
-      label: "Player action",
-      title: "Player buffs and debuffs",
-    }];
-    const creatures = [
-      "Blob",
-      "BlobElite",
-      "Boar",
-      "Crow",
-      "Deathsquito",
-      "Deer",
-      "Draugr",
-      "Draugr_Elite",
-      "Draugr_Ranged",
-      "Fenring",
-      "FireFlies",
-      "Fish1",
-      "Fish2",
-      "Fish3",
-      "Ghost",
-      "Goblin",
-      "GoblinArcher",
-      "GoblinBrute",
-      "GoblinShaman",
-      "Greydwarf",
-      "Greydwarf_Elite",
-      "Greydwarf_Shaman",
-      "Greyling",
-      "Hatchling",
-      "Leech",
-      "Leviathan",
-      "Lox",
-      "Neck",
-      "Seagal",
-      "Serpent",
-      "Skeleton",
-      "Skeleton_NoArcher",
-      "Skeleton_Poison",
-      "StoneGolem",
-      "Surtling",
-      "Troll",
-      "Wolf",
-      "Wraith",
-      "Eikthyr",
-      "gd_king",
-      "Bonemass",
-      "Dragon",
-      "GoblinKing",
-    ];
+    const rewardTypes = {
+      none: {
+        label: "None",
+        title: "No action set",
+      },
+      raven: {
+        label: "Raven messenger",
+        title: "Relays a message through the raven",
+      },
+      spawn: {
+        label: "Spawn creature",
+        title: "Spawns a creature near the player",
+      },
+      message: {
+        label: "HUD message",
+        title: "Relays a message through the chat window",
+      },
+      event: {
+        label: "Start event",
+        title: "Triggers a new event like 'You are being hunted'",
+      },
+      environment: {
+        label: "Set environment",
+        title: "Changes the weather in game",
+      },
+      player: {
+        label: "Player action",
+        title: "Player buffs and debuffs",
+      }
+    };
+    Object.getOwnPropertyNames(rewardTypes).forEach(prop => rewardTypes[prop].value = prop);
+    const creatures = [{ value: "Abomination", label: "Abomination" }, { value: "Bat", label: "Bat" }, { value: "Blob", label: "Blob" }, { value: "BlobElite", label: "Oozer" }, { value: "BlobTar", label: "Growth" }, { value: "Boar", label: "Boar" }, { value: "Bonemass", label: "Bonemass" }, { value: "Crow", label: "Crow" }, { value: "Deathsquito", label: "Deathsquito" }, { value: "Deer", label: "Deer" }, { value: "Dragon", label: "Moder" }, { value: "Draugr", label: "Draugr" }, { value: "Draugr_Elite", label: "Draugr Elite" }, { value: "Draugr_Ranged", label: "Draugr Ranged" }, { value: "Dverger", label: "Dvergr Rogue" }, { value: "DvergerMage", label: "Dvergr Mage" }, { value: "DvergerMageFire", label: "Dvergr Mage Fire" }, { value: "DvergerMageIce", label: "Dvergr Mage Ice" }, { value: "DvergerMageSupport", label: "Dvergr Mage Support" }, { value: "Eikthyr", label: "Eikthyr" }, { value: "Fenring", label: "Fenring" }, { value: "Fenring_Cultist", label: "Cultist" }, { value: "FireFlies", label: "FireFlies" }, { value: "Fish1", label: "Fish1" }, { value: "Fish10", label: "Fish10" }, { value: "Fish11", label: "Fish11" }, { value: "Fish12", label: "Fish12" }, { value: "Fish2", label: "Fish2" }, { value: "Fish3", label: "Fish3" }, { value: "Fish4_cave", label: "Fish4_cave" }, { value: "Fish5", label: "Fish5" }, { value: "Fish6", label: "Giant Herring" }, { value: "Fish7", label: "Fish7" }, { value: "Fish8", label: "Fish8" }, { value: "Fish9", label: "Fish9" }, { value: "Flies", label: "Flies" }, { value: "gd_king", label: "Elder" }, { value: "Ghost", label: "Ghost" }, { value: "Gjall", label: "Gjall" }, { value: "Goblin", label: "Fuling" }, { value: "GoblinArcher", label: "Fuling Ranged" }, { value: "GoblinBrute", label: "Fuling Berserker" }, { value: "GoblinKing", label: "Yagluth" }, { value: "GoblinShaman", label: "Fulilng Shaman" }, { value: "Greydwarf", label: "Greydwarf" }, { value: "Greydwarf_Elite", label: "Greydwarf Brute" }, { value: "Greydwarf_Shaman", label: "Greydwarf Shaman" }, { value: "Greyling", label: "Greyling" }, { value: "Hare", label: "Hare" }, { value: "Hatchling", label: "Hatchling" }, { value: "Leech", label: "Leech" }, { value: "Leviathan", label: "Leviathan" }, { value: "Lox", label: "Lox" }, { value: "Neck", label: "Neck" }, { value: "Seagal", label: "Seagal" }, { value: "Seeker", label: "Seeker" }, { value: "SeekerBrood", label: "Seeker Brood" }, { value: "SeekerBrute", label: "Seeker Soldier" }, { value: "SeekerQueen", label: "Queen" }, { value: "Serpent", label: "Serpent" }, { value: "Skeleton", label: "Skeleton Ranged" }, { value: "Skeleton_NoArcher", label: "Skeleton" }, { value: "Skeleton_Poison", label: "Skeleton_Poison" }, { value: "StoneGolem", label: "StoneGolem" }, { value: "Surtling", label: "Surtling" }, { value: "TentaRoot", label: "Elder Root" }, { value: "Tick", label: "Tick" }, { value: "Troll", label: "Troll" }, { value: "Ulv", label: "Ulv" }, { value: "Wolf", label: "Wolf" }, { value: "Wraith", label: "Wraith" }];
 
     const untamableCreatures = [
       "Crow",
@@ -584,12 +556,41 @@
       "Fish4_cave",
       "Gull",
       "Leviathan",
-      "Odin",
       "Eikthyr",
       "gd_king",
       "Bonemass",
       "Dragon",
       "GoblinKing",
+      "SeekerQueen"
+    ];
+
+    const events = [{ value: "bats", label: "Bats" }, { value: "blobs", label: "Blobs" }, { value: "foresttrolls", label: "Trolls" }, { value: "skeletons", label: "Skeletons" }, { value: "surtlings", label: "Surtlings" }, { value: "wolves", label: "Wolves" }, { value: "army_bonemass", label: "Bonemass Army" }, { value: "army_eikthyr", label: "Eikthyr Army" }, { value: "army_goblin", label: "Yagluth army" }, { value: "army_moder", label: "Moder Army" }, { value: "army_theelder", label: "Elder Army" }, { value: "army_seekers", label: "Seekers Army" }, { value: "army_gjall", label: "Gjall Army" }, { value: "boss_bonemass", label: "boss_bonemass" }, { value: "boss_eikthyr", label: "boss_eikthyr" }, { value: "boss_gdking", label: "boss_gdking" }, { value: "boss_goblinking", label: "boss_goblinking" }, { value: "boss_moder", label: "boss_moder" }];
+
+    const environments = [
+      "Reset to default",
+      "Ashrain",
+      "Bonemass",
+      "Clear",
+      "Crypt",
+      "Darklands_dark",
+      "DeepForest Mist",
+      "Eikthyr",
+      "GDKing",
+      "GoblinKing",
+      "Heath clear",
+      "LightRain",
+      "Misty",
+      "Moder",
+      "nofogts",
+      "Rain",
+      "Snow",
+      "SnowStorm",
+      "SunkenCrypt",
+      "SwampRain",
+      "ThunderStorm",
+      "Twilight_Clear",
+      "Twilight_Snow",
+      "Twilight_SnowStorm"
     ];
 
     class Reward {
@@ -601,34 +602,34 @@
       is_enabled = false;
     }
     class RavenMessageData {
-      action = 1;
+      action = rewardTypes.raven.value;
       isMunin = false;
     }
     class SpawnCreatureData {
-      action = 2;
+      action = rewardTypes.spawn.value;
       creature = 0;
       level = 0;
       count = 1;
-      distance = 100;
+      distance = 10;
       tamed = false;
     }
     class HUDMessageData {
-      action = 3;
+      action = rewardTypes.message.value;
       isCentered = false;
     }
     class RandomEventData {
-      action = 4;
+      action = rewardTypes.event.value;
       eventName = "";
       distance = 1;
       duration = 1;
     }
     class EnvironmentData {
-      action = 5;
+      action = rewardTypes.environment.value;
       name = "";
       duration = 1;
     }
     class PlayerData {
-      action = 6;
+      action = rewardTypes.player.value;
       name = "";
     }
 

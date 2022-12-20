@@ -98,7 +98,6 @@
   <ItemGroup>
     <Compile Include="Actions\Actions.cs" />
     <Compile Include="Actions\ChangeEnvironmentAction.cs" />
-    <Compile Include="Actions\SpawnCreatureSettings.cs" />
     <Compile Include="Actions\PlayerAction.cs" />
     <Compile Include="Actions\StartRandomEventAction.cs" />
     <Compile Include="Actions\HUDMessageAction.cs" />

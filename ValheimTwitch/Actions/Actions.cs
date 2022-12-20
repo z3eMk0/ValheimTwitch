@@ -24,24 +24,24 @@ namespace ValheimTwitch.Events
 
                 switch (type)
                 {
-                    case 0:
+                    case SettingsMessageData.ACTION_TYPE:
                         break;
-                    case 1:
+                    case RavenMessageData.ACTION_TYPE:
                         RavenMessageAction.Run(redemption, data as RavenMessageData);
                         break;
-                    case 2:
+                    case SpawnCreatureData.ACTION_TYPE:
                         SpawnCreatureAction.Run(redemption, data as SpawnCreatureData);
                         break;
-                    case 3:
+                    case HUDMessageData.ACTION_TYPE:
                         HUDMessageAction.Run(redemption, data as HUDMessageData);
                         break;
-                    case 4:
+                    case RandomEventData.ACTION_TYPE:
                         StartRandomEventAction.Run(redemption, data as RandomEventData);
                         break;
-                    case 5:
+                    case EnvironmentData.ACTION_TYPE:
                         ChangeEnvironmentAction.Run(redemption, data as EnvironmentData);
                         break;
-                    case 6:
+                    case PlayerData.ACTION_TYPE:
                         PlayerAction.Run(redemption, data as PlayerData);
                         break;
                     default:
