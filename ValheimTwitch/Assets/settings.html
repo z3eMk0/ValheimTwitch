@@ -9,9 +9,7 @@
 
 <body>
   <h4>Rewards</h4>
-  <button onclick="openCreateRewardForm(event)">+ New</button>
-  <button onclick="openCreateRewardForm(event)">Activate all</button>
-  <button onclick="openCreateRewardForm(event)">Deactivate all</button>
+  <button onclick="openCreateRewardForm(event)">+ New Reward</button>
   <table id="rewards">
     <thead>
       <tr>
@@ -113,11 +111,11 @@
     </tr>
     <tr>
       <td>Distance</td>
-      <td><input id="eventDistance" type="number" value="1"></td>
+      <td><input id="eventDistance" type="number"></td>
     </tr>
     <tr>
-      <td>Duration</td>
-      <td><input id="eventDuration" type="number" value="1"></td>
+      <td>Duration (in minutes)</td>
+      <td><input id="eventDuration" type="number"></td>
     </tr>
   </template>
   <template id="environmentForm">
@@ -127,7 +125,7 @@
     </tr>
     <tr>
       <td>Duration</td>
-      <td><input id="environmentDuration" type="number" value="1"></td>
+      <td><input id="environmentDuration" type="number"></td>
     </tr>
   </template>
   <template id="playerForm">
@@ -383,7 +381,7 @@
         let form = template.content.cloneNode(true);
 
         let creatureTypeSelect = form.querySelector("#creatureType");
-        populateCreaturesSelect(creatureTypeSelect, creatures, creatures.findIndex(c => c.value === spawnData.creature));
+        this.populateCreaturesSelect(creatureTypeSelect, spawnData.creature);
 
         let creatureLevelInput = form.querySelector("#creatureLevel");
         creatureLevelInput.value = spawnData.level;
@@ -417,16 +415,34 @@
         settings.tamed = document.getElementById("creatureTamed").checked;
         return settings;
       }
-    }
-    function populateCreaturesSelect(select, itemList, selectedIndex) {
-      let options = itemList.map((item, index) => {
-        let option = document.createElement("option");
-        option.label = item.label;
-        option.value = item.value;
-        option.selected = index === selectedIndex;
-        return option;
-      });
-      select.replaceChildren(...options);
+      static populateCreaturesSelect(select, selectedValue) {
+        let options = this.creatures.map((item) => {
+          let option = document.createElement("option");
+          option.label = item.label;
+          option.value = item.value;
+          option.selected = item.value === selectedValue;
+          return option;
+        });
+        select.replaceChildren(...options);
+      }
+      static creatures = [{ value: "Abomination", label: "Abomination" }, { value: "Bat", label: "Bat" }, { value: "Blob", label: "Blob" }, { value: "BlobElite", label: "Oozer" }, { value: "BlobTar", label: "Growth" }, { value: "Boar", label: "Boar" }, { value: "Bonemass", label: "Bonemass" }, { value: "Crow", label: "Crow" }, { value: "Deathsquito", label: "Deathsquito" }, { value: "Deer", label: "Deer" }, { value: "Dragon", label: "Moder" }, { value: "Draugr", label: "Draugr" }, { value: "Draugr_Elite", label: "Draugr Elite" }, { value: "Draugr_Ranged", label: "Draugr Ranged" }, { value: "Dverger", label: "Dvergr Rogue" }, { value: "DvergerMage", label: "Dvergr Mage" }, { value: "DvergerMageFire", label: "Dvergr Mage Fire" }, { value: "DvergerMageIce", label: "Dvergr Mage Ice" }, { value: "DvergerMageSupport", label: "Dvergr Mage Support" }, { value: "Eikthyr", label: "Eikthyr" }, { value: "Fenring", label: "Fenring" }, { value: "Fenring_Cultist", label: "Cultist" }, { value: "FireFlies", label: "FireFlies" }, { value: "Fish1", label: "Fish1" }, { value: "Fish10", label: "Fish10" }, { value: "Fish11", label: "Fish11" }, { value: "Fish12", label: "Fish12" }, { value: "Fish2", label: "Fish2" }, { value: "Fish3", label: "Fish3" }, { value: "Fish4_cave", label: "Fish4_cave" }, { value: "Fish5", label: "Fish5" }, { value: "Fish6", label: "Giant Herring" }, { value: "Fish7", label: "Fish7" }, { value: "Fish8", label: "Fish8" }, { value: "Fish9", label: "Fish9" }, { value: "Flies", label: "Flies" }, { value: "gd_king", label: "Elder" }, { value: "Ghost", label: "Ghost" }, { value: "Gjall", label: "Gjall" }, { value: "Goblin", label: "Fuling" }, { value: "GoblinArcher", label: "Fuling Ranged" }, { value: "GoblinBrute", label: "Fuling Berserker" }, { value: "GoblinKing", label: "Yagluth" }, { value: "GoblinShaman", label: "Fulilng Shaman" }, { value: "Greydwarf", label: "Greydwarf" }, { value: "Greydwarf_Elite", label: "Greydwarf Brute" }, { value: "Greydwarf_Shaman", label: "Greydwarf Shaman" }, { value: "Greyling", label: "Greyling" }, { value: "Hare", label: "Hare" }, { value: "Hatchling", label: "Hatchling" }, { value: "Leech", label: "Leech" }, { value: "Leviathan", label: "Leviathan" }, { value: "Lox", label: "Lox" }, { value: "Neck", label: "Neck" }, { value: "Seagal", label: "Seagal" }, { value: "Seeker", label: "Seeker" }, { value: "SeekerBrood", label: "Seeker Brood" }, { value: "SeekerBrute", label: "Seeker Soldier" }, { value: "SeekerQueen", label: "Queen" }, { value: "Serpent", label: "Serpent" }, { value: "Skeleton", label: "Skeleton Ranged" }, { value: "Skeleton_NoArcher", label: "Skeleton" }, { value: "Skeleton_Poison", label: "Skeleton_Poison" }, { value: "StoneGolem", label: "StoneGolem" }, { value: "Surtling", label: "Surtling" }, { value: "TentaRoot", label: "Elder Root" }, { value: "Tick", label: "Tick" }, { value: "Troll", label: "Troll" }, { value: "Ulv", label: "Ulv" }, { value: "Wolf", label: "Wolf" }, { value: "Wraith", label: "Wraith" }];
+
+      static untamableCreatures = [
+        "Crow",
+        "Deer",
+        "Fish1",
+        "Fish2",
+        "Fish3",
+        "Fish4_cave",
+        "Gull",
+        "Leviathan",
+        "Eikthyr",
+        "gd_king",
+        "Bonemass",
+        "Dragon",
+        "GoblinKing",
+        "SeekerQueen"
+      ];
     }
     class MessageForm {
       static create(messageData) {
@@ -450,7 +466,7 @@
         let form = template.content.cloneNode(true);
 
         let eventNameSelect = form.querySelector("#eventName");
-        populateCreaturesSelect(eventNameSelect, creatures, eventData.eventName);
+        this.populateEventsSelect(eventNameSelect, eventData.eventName);
 
         let eventDistanceInput = form.querySelector("#eventDistance");
         eventDistanceInput.value = eventData.distance;
@@ -473,6 +489,17 @@
         }
         return settings;
       }
+      static populateEventsSelect(select, selectedValue) {
+        let options = this.events.map((item) => {
+          let option = document.createElement("option");
+          option.label = item.label;
+          option.value = item.value;
+          option.selected = item.value === selectedValue;
+          return option;
+        });
+        select.replaceChildren(...options);
+      }
+      static events = [{ value: "bats", label: "Bats" }, { value: "blobs", label: "Blobs" }, { value: "foresttrolls", label: "Trolls" }, { value: "skeletons", label: "Skeletons" }, { value: "surtlings", label: "Surtlings" }, { value: "wolves", label: "Wolves" }, { value: "army_bonemass", label: "Bonemass Army" }, { value: "army_eikthyr", label: "Eikthyr Army" }, { value: "army_goblin", label: "Yagluth army" }, { value: "army_moder", label: "Moder Army" }, { value: "army_theelder", label: "Elder Army" }, { value: "army_seekers", label: "Seekers Army" }, { value: "army_gjall", label: "Gjall Army" }, { value: "boss_bonemass", label: "boss_bonemass" }, { value: "boss_eikthyr", label: "boss_eikthyr" }, { value: "boss_gdking", label: "boss_gdking" }, { value: "boss_goblinking", label: "boss_goblinking" }, { value: "boss_moder", label: "boss_moder" }];
     }
     class EnvironmentForm {
       static create(environmentData) {
@@ -480,7 +507,7 @@
         let form = template.content.cloneNode(true);
 
         let environmentNameSelect = form.querySelector("#environmentName");
-        populateCreaturesSelect(environmentNameSelect, creatures, environmentData.name);
+        this.populateEnvironmentsSelect(environmentNameSelect, environmentData.name);
 
         let environmentDurationInput = form.querySelector("#environmentDuration");
         environmentDurationInput.value = environmentData.duration;
@@ -496,6 +523,42 @@
         }
         return settings;
       }
+      static populateEnvironmentsSelect(select, selectedValue) {
+        let options = this.environments.map((item) => {
+          let option = document.createElement("option");
+          option.label = item;
+          option.value = item;
+          option.selected = item === selectedValue;
+          return option;
+        });
+        select.replaceChildren(...options);
+      }
+      static environments = [
+        "Reset to default",
+        "Ashrain",
+        "Bonemass",
+        "Clear",
+        "Crypt",
+        "Darklands_dark",
+        "DeepForest Mist",
+        "Eikthyr",
+        "GDKing",
+        "GoblinKing",
+        "Heath clear",
+        "LightRain",
+        "Misty",
+        "Moder",
+        "nofogts",
+        "Rain",
+        "Snow",
+        "SnowStorm",
+        "SunkenCrypt",
+        "SwampRain",
+        "ThunderStorm",
+        "Twilight_Clear",
+        "Twilight_Snow",
+        "Twilight_SnowStorm"
+      ];
     }
     class PlayerForm {
       static create(playerData) {
@@ -503,7 +566,7 @@
         let form = template.content.cloneNode(true);
 
         let actionNameSelect = form.querySelector("#actionName");
-        populateCreaturesSelect(actionNameSelect, creatures, playerData.name);
+        this.populatePlayerActionsSelect(actionNameSelect, playerData.name);
 
         return form;
       }
@@ -512,6 +575,17 @@
         settings.name = document.getElementById("actionName").selectedOptions[0].value;
         return settings;
       }
+      static populatePlayerActionsSelect(select, selectedValue) {
+        let options = this.playerActions.map((item) => {
+          let option = document.createElement("option");
+          option.label = item.label;
+          option.value = item.value;
+          option.selected = item.value === selectedValue;
+          return option;
+        });
+        select.replaceChildren(...options);
+      }
+      static playerActions = [{ value: "puke", label: "Puke" }, { value: "heal", label: "Heal" }];
     }
 
     const rewardTypes = {
@@ -545,53 +619,6 @@
       }
     };
     Object.getOwnPropertyNames(rewardTypes).forEach(prop => rewardTypes[prop].value = prop);
-    const creatures = [{ value: "Abomination", label: "Abomination" }, { value: "Bat", label: "Bat" }, { value: "Blob", label: "Blob" }, { value: "BlobElite", label: "Oozer" }, { value: "BlobTar", label: "Growth" }, { value: "Boar", label: "Boar" }, { value: "Bonemass", label: "Bonemass" }, { value: "Crow", label: "Crow" }, { value: "Deathsquito", label: "Deathsquito" }, { value: "Deer", label: "Deer" }, { value: "Dragon", label: "Moder" }, { value: "Draugr", label: "Draugr" }, { value: "Draugr_Elite", label: "Draugr Elite" }, { value: "Draugr_Ranged", label: "Draugr Ranged" }, { value: "Dverger", label: "Dvergr Rogue" }, { value: "DvergerMage", label: "Dvergr Mage" }, { value: "DvergerMageFire", label: "Dvergr Mage Fire" }, { value: "DvergerMageIce", label: "Dvergr Mage Ice" }, { value: "DvergerMageSupport", label: "Dvergr Mage Support" }, { value: "Eikthyr", label: "Eikthyr" }, { value: "Fenring", label: "Fenring" }, { value: "Fenring_Cultist", label: "Cultist" }, { value: "FireFlies", label: "FireFlies" }, { value: "Fish1", label: "Fish1" }, { value: "Fish10", label: "Fish10" }, { value: "Fish11", label: "Fish11" }, { value: "Fish12", label: "Fish12" }, { value: "Fish2", label: "Fish2" }, { value: "Fish3", label: "Fish3" }, { value: "Fish4_cave", label: "Fish4_cave" }, { value: "Fish5", label: "Fish5" }, { value: "Fish6", label: "Giant Herring" }, { value: "Fish7", label: "Fish7" }, { value: "Fish8", label: "Fish8" }, { value: "Fish9", label: "Fish9" }, { value: "Flies", label: "Flies" }, { value: "gd_king", label: "Elder" }, { value: "Ghost", label: "Ghost" }, { value: "Gjall", label: "Gjall" }, { value: "Goblin", label: "Fuling" }, { value: "GoblinArcher", label: "Fuling Ranged" }, { value: "GoblinBrute", label: "Fuling Berserker" }, { value: "GoblinKing", label: "Yagluth" }, { value: "GoblinShaman", label: "Fulilng Shaman" }, { value: "Greydwarf", label: "Greydwarf" }, { value: "Greydwarf_Elite", label: "Greydwarf Brute" }, { value: "Greydwarf_Shaman", label: "Greydwarf Shaman" }, { value: "Greyling", label: "Greyling" }, { value: "Hare", label: "Hare" }, { value: "Hatchling", label: "Hatchling" }, { value: "Leech", label: "Leech" }, { value: "Leviathan", label: "Leviathan" }, { value: "Lox", label: "Lox" }, { value: "Neck", label: "Neck" }, { value: "Seagal", label: "Seagal" }, { value: "Seeker", label: "Seeker" }, { value: "SeekerBrood", label: "Seeker Brood" }, { value: "SeekerBrute", label: "Seeker Soldier" }, { value: "SeekerQueen", label: "Queen" }, { value: "Serpent", label: "Serpent" }, { value: "Skeleton", label: "Skeleton Ranged" }, { value: "Skeleton_NoArcher", label: "Skeleton" }, { value: "Skeleton_Poison", label: "Skeleton_Poison" }, { value: "StoneGolem", label: "StoneGolem" }, { value: "Surtling", label: "Surtling" }, { value: "TentaRoot", label: "Elder Root" }, { value: "Tick", label: "Tick" }, { value: "Troll", label: "Troll" }, { value: "Ulv", label: "Ulv" }, { value: "Wolf", label: "Wolf" }, { value: "Wraith", label: "Wraith" }];
-
-    const untamableCreatures = [
-      "Crow",
-      "Deer",
-      "Fish1",
-      "Fish2",
-      "Fish3",
-      "Fish4_cave",
-      "Gull",
-      "Leviathan",
-      "Eikthyr",
-      "gd_king",
-      "Bonemass",
-      "Dragon",
-      "GoblinKing",
-      "SeekerQueen"
-    ];
-
-    const events = [{ value: "bats", label: "Bats" }, { value: "blobs", label: "Blobs" }, { value: "foresttrolls", label: "Trolls" }, { value: "skeletons", label: "Skeletons" }, { value: "surtlings", label: "Surtlings" }, { value: "wolves", label: "Wolves" }, { value: "army_bonemass", label: "Bonemass Army" }, { value: "army_eikthyr", label: "Eikthyr Army" }, { value: "army_goblin", label: "Yagluth army" }, { value: "army_moder", label: "Moder Army" }, { value: "army_theelder", label: "Elder Army" }, { value: "army_seekers", label: "Seekers Army" }, { value: "army_gjall", label: "Gjall Army" }, { value: "boss_bonemass", label: "boss_bonemass" }, { value: "boss_eikthyr", label: "boss_eikthyr" }, { value: "boss_gdking", label: "boss_gdking" }, { value: "boss_goblinking", label: "boss_goblinking" }, { value: "boss_moder", label: "boss_moder" }];
-
-    const environments = [
-      "Reset to default",
-      "Ashrain",
-      "Bonemass",
-      "Clear",
-      "Crypt",
-      "Darklands_dark",
-      "DeepForest Mist",
-      "Eikthyr",
-      "GDKing",
-      "GoblinKing",
-      "Heath clear",
-      "LightRain",
-      "Misty",
-      "Moder",
-      "nofogts",
-      "Rain",
-      "Snow",
-      "SnowStorm",
-      "SunkenCrypt",
-      "SwampRain",
-      "ThunderStorm",
-      "Twilight_Clear",
-      "Twilight_Snow",
-      "Twilight_SnowStorm"
-    ];
 
     class Reward {
       title = "";

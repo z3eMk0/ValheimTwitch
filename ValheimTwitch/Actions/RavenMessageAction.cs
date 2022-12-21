@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using ValheimTwitch.Gui;
+﻿using ValheimTwitch.Gui;
 using ValheimTwitch.Patches;
 using ValheimTwitch.Twitch.PubSub.Messages;
 
