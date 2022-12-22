@@ -43,6 +43,12 @@ namespace ValheimTwitch.Gui
                     await ServeHTML(context, 200, content);
                 }
                 else if (context.Request.Method == HttpMethod.GET
+                    && context.Request.Url.RawWithoutQuery.Equals("/pure-min.css"))
+                {
+                    string content = EmbeddedAsset.LoadString("Assets.pure-min.css");
+                    await ServeCSS(context, content);
+                }
+                else if (context.Request.Method == HttpMethod.GET
                     && context.Request.Url.RawWithoutQuery.Equals("/favicon.ico"))
                 {
                     await ServeHTML(context, 200, "");
@@ -58,7 +64,7 @@ namespace ValheimTwitch.Gui
                         bool isManagable = customRewards.Data.Exists(r => r.Id == reward.Id);
                         return new RewardSettings(reward, settings, isManagable);
                     });
-                    await ServeJSON(context, 200, rewardsSettings);
+                    await ServeJSON(context, rewardsSettings);
                 }
                 else if (context.Request.Method == HttpMethod.POST
                     && context.Request.Url.RawWithoutQuery.Equals("/rewards"))
@@ -148,10 +154,16 @@ namespace ValheimTwitch.Gui
             context.Response.ContentType = "text/html; charset=utf-8";
             return context.Response.Send(content);
         }
-
-        private static Task<bool> ServeJSON(HttpContext context, int code, object data)
+        private static Task<bool> ServeCSS(HttpContext context, string content)
         {
-            context.Response.StatusCode = code;
+            context.Response.StatusCode = 200;
+            context.Response.ContentType = "text/css; charset=utf-8";
+            return context.Response.Send(content);
+        }
+
+        private static Task<bool> ServeJSON(HttpContext context, object data)
+        {
+            context.Response.StatusCode = 200;
             context.Response.ContentType = "application/json; charset=utf-8";
             var content = JsonConvert.SerializeObject(data);
             return context.Response.Send(content);

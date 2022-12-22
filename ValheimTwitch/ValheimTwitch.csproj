@@ -200,6 +200,7 @@
     <EmbeddedResource Include="Assets\settings.html" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Assets\pure-min.css" />
     <Content Include="test-setup.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

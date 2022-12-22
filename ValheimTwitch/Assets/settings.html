@@ -5,134 +5,125 @@
   <meta charset='utf-8'>
   <title>Valheim Twitch Rewards</title>
   <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <link rel="stylesheet" href="/pure-min.css">
 </head>
 
 <body>
-  <h4>Rewards</h4>
-  <button onclick="openCreateRewardForm(event)">+ New Reward</button>
-  <table id="rewards">
-    <thead>
-      <tr>
-        <th>Toggle</th>
-        <th>Cost</th>
-        <th>Title</th>
-        <th>Edit</th>
-        <th>Delete</th>
-      </tr>
-    </thead>
-    <tbody>
-    </tbody>
-  </table>
-  <table id="rewardForm" style="display: none;">
-    <tbody>
-      <tr>
-        <td>Title</td>
-        <td>
-          <input id="rewardTitle" type="text">
+  <div class="pure-g" style="margin: 20px;">
+    <div class="pure-u-1-2">
+      <h4 style="text-align: center;">Rewards</h4>
+      <button onclick="openCreateRewardForm(event)" class="pure-button pure-button-primary">+ New Reward</button>
+      <table id="rewards" class="pure-table" style="width: 100%;">
+        <thead>
+          <tr>
+            <th>Cost</th>
+            <th>Title</th>
+            <th>Edit</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+    <div class="pure-u-1-2">
+      <form id="rewardForm" class="pure-form pure-form-aligned" style="display: none;">
+        <fieldset>
           <input id="rewardId" type="hidden">
-        </td>
-      </tr>
-      <tr>
-        <td>Cost</td>
-        <td>
-          <input id="rewardCost" type="number">
-        </td>
-      </tr>
-      <tr>
-        <td>Is user input required</td>
-        <td>
-          <input id="rewardUserInputRequired" type="checkbox">
-        </td>
-      </tr>
-      <tr>
-        <td>Prompt</td>
-        <td>
-          <input id="rewardPrompt" type="text">
-        </td>
-      </tr>
-      <tr>
-        <td>Should redemptions skip request queue</td>
-        <td>
-          <input id="rewardSkipRequestQueue" type="checkbox">
-        </td>
-      </tr>
-      <tr id="rewardTypeRow">
-        <td>Type</td>
-        <td>
-          <select id="rewardTypes" onchange="rewardTypeChanged()"></select>
-        </td>
-      </tr>
-    </tbody>
-    <tfoot>
-      <tr>
-        <td><button onclick="saveRewardClicked()">Save</button></td>
-        <td><button>Cancel</button></td>
-      </tr>
-    </tfoot>
-  </table>
+          <div class="pure-control-group">
+            <label for="rewardTitle">Title</label>
+            <input id="rewardTitle" type="text">
+          </div>
+          <div class="pure-control-group">
+            <label for="rewardCost">Cost</label>
+            <input id="rewardCost" type="number">
+          </div>
+          <div class="pure-control-group">
+            <label for="rewardUserInputRequired">Is user input required</label>
+            <input id="rewardUserInputRequired" type="checkbox">
+          </div>
+          <div class="pure-control-group">
+            <label for="rewardPrompt">Prompt</label>
+            <input id="rewardPrompt" type="text">
+          </div>
+          <div class="pure-control-group">
+            <label for="rewardSkipRequestQueue">Should redemptions skip request queue</label>
+            <input id="rewardSkipRequestQueue" type="checkbox">
+          </div>
+          <div id="rewardTypeRow" class="pure-control-group">
+            <label for="rewardTypes">Type</label>
+            <select id="rewardTypes" onchange="rewardTypeChanged()"></select>
+          </div>
+          <div class="pure-controls">
+            <button onclick="saveRewardClicked()" class="pure-button pure-button-primary">Save</button>
+            <button onclick="cancelRewardClicked()" class="pure-button">Cancel</button>
+          </div>
+      </form>
+    </div>
+  </div>
   <template id="ravenForm">
-    <tr>
-      <td>Is Munin</td>
-      <td><input id="isMunin" type="checkbox" value="false"></td>
-    </tr>
+    <div class="pure-control-group">
+      <label for="isMunin">Is Munin</label>
+      <input id="isMunin" type="checkbox">
+    </div>
   </template>
   <template id="spawnForm">
-    <tr>
-      <td>Creature</td>
-      <td><select id="creatureType"></select></td>
-    </tr>
-    <tr>
-      <td>Level</td>
-      <td><input id="creatureLevel" type="number"></td>
-    </tr>
-    <tr>
-      <td>Count</td>
-      <td><input id="creatureCount" type="number"></td>
-    </tr>
-    <tr>
-      <td>Distance</td>
-      <td><input id="creatureDistance" type="number"></td>
-    </tr>
-    <tr>
-      <td>Tamed</td>
-      <td><input id="creatureTamed" type="checkbox"></td>
-    </tr>
+    <div class="pure-control-group">
+      <label for="creatureType">Creature</label>
+      <select id="creatureType"></select>
+    </div>
+    <div class="pure-control-group">
+      <label for="creatureLevel">Level</label>
+      <input id="creatureLevel" type="number">
+    </div>
+    <div class="pure-control-group">
+      <label for="creatureCount">Count</label>
+      <input id="creatureCount" type="number">
+    </div>
+    <div class="pure-control-group">
+      <label for="creatureDistance">Distance</label>
+      <input id="creatureDistance" type="number">
+    </div>
+    <div class="pure-control-group">
+      <label for="creatureType">Tamed</label>
+      <input id="creatureTamed" type="checkbox">
+    </div>
   </template>
   <template id="messageForm">
-    <tr>
-      <td>Is centered</td>
-      <td><input id="isCentered" type="checkbox" value="false"></td>
-    </tr>
+    <div class="pure-control-group">
+      <label for="isCentered">Is centered</label>
+      <input id="isCentered" type="checkbox">
+    </div>
   </template>
   <template id="eventForm">
-    <tr>
-      <td>Event name</td>
-      <td><select id="eventName"></select></td>
-    </tr>
-    <tr>
-      <td>Distance</td>
-      <td><input id="eventDistance" type="number"></td>
-    </tr>
-    <tr>
-      <td>Duration (in minutes)</td>
-      <td><input id="eventDuration" type="number"></td>
-    </tr>
+    <div class="pure-control-group">
+      <label for="eventName">Event name</label>
+      <select id="eventName"></select>
+    </div>
+    <div class="pure-control-group">
+      <label for="eventDistance">Distance</label>
+      <input id="eventDistance" type="number">
+    </div>
+    <div class="pure-control-group">
+      <label for="eventDuration">Duration (in minutes)</label>
+      <input id="eventDuration" type="number">
+    </div>
   </template>
   <template id="environmentForm">
-    <tr>
-      <td>Name</td>
-      <td><select id="environmentName"></select></td>
-    </tr>
-    <tr>
-      <td>Duration</td>
-      <td><input id="environmentDuration" type="number"></td>
-    </tr>
+    <div class="pure-control-group">
+      <label for="environmentName">Name</label>
+      <select id="environmentName"></select>
+    </div>
+    <div class="pure-control-group">
+      <label for="environmentDuration">Duration</label>
+      <input id="environmentDuration" type="number">
+    </div>
   </template>
   <template id="playerForm">
-    <tr>
-      <td>Name</td>
-      <td><select id="actionName"></select></td>
-    </tr>
+    <div class="pure-control-group">
+      <label for="actionName">Name</label>
+      <select id="actionName"></select>
+    </div>
   </template>
   <script>
     async function loadRewards() {
@@ -166,19 +157,13 @@
         }
       }
     }
-    async function toggleReward(reward) {
-      reward.data.is_enabled = !reward.data.is_enabled;
-      let response = await fetch("/rewards/" + reward.data.id, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(reward),
-      });
-      if (response.status === 200) {
-        //TODO ip: update only the checkbox
-        await loadRewards();
-      }
+    function cancelRewardClicked() {
+      let form = document.getElementById("rewardForm");
+      form.style.display = "none";
+      populateRewardDataForm(new Reward());
+      let select = document.getElementById("rewardTypes");
+      select.selectedIndex = 0;
+      rewardTypeChanged(null);
     }
     function getReward() {
       let data = new Reward();
@@ -282,22 +267,24 @@
     }
     function rewardTypeChanged(rewardSettings) {
       let row = document.getElementById("rewardTypeRow");
-      while (row.nextSibling) {
+      // delete all rows except the last one with buttons
+      while (row.nextSibling && row.nextSibling.nextSibling) {
         row.nextSibling.remove();
       }
       let select = document.getElementById("rewardTypes");
+      let selectedValue = select.selectedOptions[0].value;
       let form;
-      if (select.selectedOptions[0].value === rewardTypes.raven.value) {
+      if (selectedValue === rewardTypes.raven.value) {
         form = RavenForm.create(rewardSettings || new RavenMessageData());
-      } else if (select.selectedOptions[0].value === rewardTypes.spawn.value) {
+      } else if (selectedValue === rewardTypes.spawn.value) {
         form = SpawnForm.create(rewardSettings || new SpawnCreatureData());
-      } else if (select.selectedOptions[0].value === rewardTypes.message.value) {
+      } else if (selectedValue === rewardTypes.message.value) {
         form = MessageForm.create(rewardSettings || new HUDMessageData());
-      } else if (select.selectedOptions[0].value === rewardTypes.event.value) {
+      } else if (selectedValue === rewardTypes.event.value) {
         form = EventForm.create(rewardSettings || new RandomEventData());
-      } else if (select.selectedOptions[0].value === rewardTypes.environment.value) {
+      } else if (selectedValue === rewardTypes.environment.value) {
         form = EnvironmentForm.create(rewardSettings || new EnvironmentData());
-      } else if (select.selectedOptions[0].value === rewardTypes.player.value) {
+      } else if (selectedValue === rewardTypes.player.value) {
         form = PlayerForm.create(rewardSettings || new PlayerData());
       }
       if (form) {
@@ -311,16 +298,6 @@
       if (rewards.length > 0) {
         rows = rewards.map(reward => {
           let row = document.createElement("tr");
-
-          let toggleCell = document.createElement("td");
-          if (reward.isManagable) {
-            let toggle = document.createElement("input");
-            toggle.type = "checkbox";
-            toggle.checked = reward.data.is_enabled;
-            toggle.addEventListener("click", (e) => toggleReward(reward));
-            toggleCell.appendChild(toggle);
-          }
-          row.appendChild(toggleCell);
 
           let costCell = document.createElement("td");
           costCell.appendChild(document.createTextNode(reward.data.cost));
