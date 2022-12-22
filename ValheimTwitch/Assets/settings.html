@@ -12,8 +12,8 @@
   <div class="pure-g" style="margin: 20px;">
     <div class="pure-u-1-2">
       <h4 style="text-align: center;">Rewards</h4>
-      <button onclick="openCreateRewardForm(event)" class="pure-button pure-button-primary">+ New Reward</button>
-      <table id="rewards" class="pure-table" style="width: 100%;">
+      <button onclick="openCreateRewardForm(event)" class="pure-button pure-button-primary" style="margin: 10px 0;">+ New Reward</button>
+      <table id="rewards" class="pure-table pure-table-bordered" style="width: 100%;">
         <thead>
           <tr>
             <th>Cost</th>
@@ -26,9 +26,12 @@
         </tbody>
       </table>
     </div>
-    <div class="pure-u-1-2">
+    <div class="pure-u-1-12">
+    </div>
+    <div class="pure-u-5-12">
       <form id="rewardForm" class="pure-form pure-form-aligned" style="display: none;">
         <fieldset>
+          <legend id="rewardFormTitle"></legend>
           <input id="rewardId" type="hidden">
           <div class="pure-control-group">
             <label for="rewardTitle">Title</label>
@@ -54,9 +57,9 @@
             <label for="rewardTypes">Type</label>
             <select id="rewardTypes" onchange="rewardTypeChanged()"></select>
           </div>
-          <div class="pure-controls">
-            <button onclick="saveRewardClicked()" class="pure-button pure-button-primary">Save</button>
-            <button onclick="cancelRewardClicked()" class="pure-button">Cancel</button>
+          <div id="rewardFormFooter" class="pure-controls">
+            <button onclick="saveRewardClicked(event)" class="pure-button pure-button-primary">Save</button>
+            <button onclick="cancelRewardClicked(event)" class="pure-button">Cancel</button>
           </div>
       </form>
     </div>
@@ -85,7 +88,7 @@
       <input id="creatureDistance" type="number">
     </div>
     <div class="pure-control-group">
-      <label for="creatureType">Tamed</label>
+      <label for="creatureTamed">Tamed</label>
       <input id="creatureTamed" type="checkbox">
     </div>
   </template>
@@ -131,7 +134,9 @@
       let rewards = (await response.json()) || [];
       drawRewards(rewards);
     }
-    async function saveRewardClicked() {
+    async function saveRewardClicked(e) {
+      e.preventDefault();
+      e.stopPropagation();
       let reward = getReward();
       if (!reward.data.id) {
         let response = await fetch("/rewards", {
@@ -157,7 +162,9 @@
         }
       }
     }
-    function cancelRewardClicked() {
+    function cancelRewardClicked(e) {
+      e.preventDefault();
+      e.stopPropagation();
       let form = document.getElementById("rewardForm");
       form.style.display = "none";
       populateRewardDataForm(new Reward());
@@ -206,7 +213,7 @@
       e.stopPropagation();
       openRewardForm({
         data: new Reward(),
-        settings: new SpawnCreatureData(),
+        settings: new SettingsMessageData(),
       });
       return false;
     }
@@ -252,6 +259,8 @@
       select.replaceChildren(...options);
     }
     function populateRewardDataForm(rewardData) {
+      let rewardFormTitle = document.getElementById("rewardFormTitle");
+      rewardFormTitle.textContent = rewardData.id ? "Edit Reward Fields" : "New Reward Fields";
       let rewardTitle = document.getElementById("rewardTitle");
       rewardTitle.value = rewardData.title;
       let rewardId = document.getElementById("rewardId");
@@ -268,7 +277,7 @@
     function rewardTypeChanged(rewardSettings) {
       let row = document.getElementById("rewardTypeRow");
       // delete all rows except the last one with buttons
-      while (row.nextSibling && row.nextSibling.nextSibling) {
+      while (row.nextSibling && row.nextSibling.id !== "rewardFormFooter") {
         row.nextSibling.remove();
       }
       let select = document.getElementById("rewardTypes");
@@ -288,7 +297,7 @@
         form = PlayerForm.create(rewardSettings || new PlayerData());
       }
       if (form) {
-        row.parentNode.append(form);
+        row.after(form);
       }
     }
     function drawRewards(rewards) {
@@ -604,6 +613,9 @@
       is_user_input_required = false;
       should_redemptions_skip_request_queue = false;
       is_enabled = false;
+    }
+    class SettingsMessageData {
+      action = rewardTypes.none.value;
     }
     class RavenMessageData {
       action = rewardTypes.raven.value;
