@@ -103,6 +103,10 @@
     <Compile Include="Actions\HUDMessageAction.cs" />
     <Compile Include="Actions\RavenMessageAction.cs" />
     <Compile Include="Actions\SpawnCreatureAction.cs" />
+    <Compile Include="Config\ConfigFactory.cs" />
+    <Compile Include="Config\IConfigProvider.cs" />
+    <Compile Include="Config\LiveConfig.cs" />
+    <Compile Include="Config\TestConfig.cs" />
     <Compile Include="Gui\InitialScreen.cs" />
     <Compile Include="Gui\Model.cs" />
     <Compile Include="Gui\SettingsServer.cs" />
@@ -114,14 +118,14 @@
     <Compile Include="Patches\CharacterPatch.cs" />
     <Compile Include="Patches\RandEventSystemPatch.cs" />
     <Compile Include="Patches\Game.cs" />
-    <Compile Include="RewardsConfig.cs" />
+    <Compile Include="Config\RewardsConfig.cs" />
     <Compile Include="Helpers\Colors.cs" />
     <Compile Include="Helpers\TextureLoader.cs" />
     <Compile Include="Helpers\Prefab.cs" />
     <Compile Include="Patches\ConsolePatch.cs" />
     <Compile Include="Patches\Raven.cs" />
     <Compile Include="Patches\PlayerPatch.cs" />
-    <Compile Include="PluginConfig.cs" />
+    <Compile Include="Config\PluginConfig.cs" />
     <Compile Include="Patches\ObjectStateExtensions.cs" />
     <Compile Include="Twitch\Test\RedeemServer.cs" />
     <Compile Include="Update\Release.cs" />

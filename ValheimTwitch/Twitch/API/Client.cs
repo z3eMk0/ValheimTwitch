@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net;
 using UnityEngine;
+using ValheimTwitch.Config;
 using ValheimTwitch.Twitch.API.Helix;
 using ValheimTwitch.Twitch.Auth;
 
@@ -28,23 +29,19 @@ namespace ValheimTwitch.Twitch.API
         public TokenProvider tokenProvider;
         public readonly Credentials credentials;
 
-        //private readonly string helixURL = "https://api.twitch.tv/helix";
-        private readonly string helixURL = "http://localhost:8080/mock";
-
-        public Client(Credentials credentials)
-        {
-            this.credentials = credentials;
-        }
-
-        public Client(string clientId, string accessToken)
-        {
-            credentials = new Credentials(clientId, accessToken);
-        }
+        private readonly string helixURL;
 
         public Client(string clientId, string accessToken, string refreshToken, TokenProvider tokenProvider)
         {
             this.tokenProvider = tokenProvider;
             credentials = new Credentials(clientId, accessToken, refreshToken);
+        }
+
+        public Client(IConfigProvider configProvider, TokenProvider tokenProvider)
+        {
+            helixURL = configProvider.HelixUrl;
+            credentials = configProvider.Credentials;
+            this.tokenProvider = tokenProvider;
         }
 
         public string Get(string url, bool refresh = true)

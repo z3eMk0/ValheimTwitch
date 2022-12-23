@@ -2,8 +2,8 @@
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using ValheimTwitch.Config;
 using ValheimTwitch.Events;
-using ValheimTwitch.Gui;
 using ValheimTwitch.Twitch.PubSub.Messages;
 using WatsonWebserver;
 
@@ -40,7 +40,7 @@ namespace ValheimTwitch.Twitch.Test
                     var eventJSON = context.Request.DataAsJsonObject<JToken>();
                     Log.Info($"redeem data {eventJSON}");
                     var redeemData = context.Request.DataAsJsonObject<RedeemData>();
-                    var action = RewardsConfig.GetSettings(redeemData.Event.Reward.Id);
+                    var action = Plugin.Instance.configProvider.Rewards.GetSettings(redeemData.Event.Reward.Id);
 
                     if (action == null)
                         return;

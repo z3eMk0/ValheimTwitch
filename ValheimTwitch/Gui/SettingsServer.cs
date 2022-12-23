@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
+using ValheimTwitch.Config;
 using ValheimTwitch.Helpers;
 using ValheimTwitch.Twitch.API;
 using ValheimTwitch.Twitch.API.Helix;
@@ -60,7 +61,7 @@ namespace ValheimTwitch.Gui
                     var customRewards = Plugin.Instance.twitchClient.GetCustomRewards();
                     var rewardsSettings = rewards.Data.ConvertAll(reward =>
                     {
-                        var settings = RewardsConfig.GetSettings(reward.Id);
+                        var settings = Plugin.Instance.configProvider.Rewards.GetSettings(reward.Id);
                         bool isManagable = customRewards.Data.Exists(r => r.Id == reward.Id);
                         return new RewardSettings(reward, settings, isManagable);
                     });
@@ -133,7 +134,7 @@ namespace ValheimTwitch.Gui
                 {
                     var id = context.Request.Url.RawWithoutQuery.Substring("/rewards/".Length);
                     var reward = Plugin.Instance.twitchClient.DeleteCustomReward(id);
-                    RewardsConfig.Delete(id);
+                    Plugin.Instance.configProvider.Rewards.Delete(id);
                     await ServeHTML(context, 200, "Deleted");
                 }
                 else
@@ -179,7 +180,7 @@ namespace ValheimTwitch.Gui
         }
         private void SaveRewardSettings(SettingsChangedArgs e)
         {
-            RewardsConfig.Set(e.RewardId, e.Data);
+            Plugin.Instance.configProvider.Rewards.Set(e.RewardId, e.Data);
         }
 
         private class RewardSettings

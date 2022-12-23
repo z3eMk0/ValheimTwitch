@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Timers;
-using ValheimTwitch.Twitch.Auth;
 using WebSocketSharp;
 
 namespace ValheimTwitch.Twitch.PubSub
@@ -29,8 +28,8 @@ namespace ValheimTwitch.Twitch.PubSub
 
         private WebSocket WS;
 
-        private readonly System.Timers.Timer PingTimer;
-        private readonly System.Timers.Timer PongTimer;
+        private readonly Timer PingTimer;
+        private readonly Timer PongTimer;
 
         private const string PubSubURL = "wss://pubsub-edge.twitch.tv";
         public const int MaxReconnection = 9; // ~2 min.
@@ -42,20 +41,16 @@ namespace ValheimTwitch.Twitch.PubSub
         {
             this.client = client;
 
-            PingTimer = new System.Timers.Timer();
+            PingTimer = new Timer();
             PingTimer.Elapsed += OnPingEvent;
 
-            PongTimer = new System.Timers.Timer();
+            PongTimer = new Timer();
             PongTimer.Elapsed += OnPongTimeoutEvent;
             PongTimer.AutoReset = false;
             PongTimer.Interval = 10000;
 
             SetRandomPingInterval();
         }
-
-        public Client(Credentials credentials) : this(new API.Client(credentials)) {}
-
-        public Client(string clientId, string accessToken) : this(new API.Client(clientId, accessToken)) { }
 
         protected void SetRandomPingInterval()
         {
@@ -130,7 +125,7 @@ namespace ValheimTwitch.Twitch.PubSub
 
             Disconnect();
 
-            var timer = new System.Timers.Timer();
+            var timer = new Timer();
 
             timer.Elapsed += (object source, ElapsedEventArgs e) => Connect();
             timer.Interval = ReconnectionInterval;

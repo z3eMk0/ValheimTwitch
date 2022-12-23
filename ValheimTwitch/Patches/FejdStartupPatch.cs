@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using ValheimTwitch.Config;
 using ValheimTwitch.Gui;
 using ValheimTwitch.Helpers;
 using ValheimTwitch.Twitch.API;

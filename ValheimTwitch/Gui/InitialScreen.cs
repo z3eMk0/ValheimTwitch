@@ -1,6 +1,7 @@
 ﻿using Jotunn.Managers;
 using UnityEngine;
 using UnityEngine.UI;
+using ValheimTwitch.Config;
 
 namespace ValheimTwitch.Gui
 {

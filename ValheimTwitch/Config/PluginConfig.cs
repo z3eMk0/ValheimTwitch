@@ -2,7 +2,7 @@
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
-namespace ValheimTwitch
+namespace ValheimTwitch.Config
 {
     static class PluginConfig
     {

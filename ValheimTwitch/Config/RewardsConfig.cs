@@ -6,14 +6,19 @@ using System.Reflection;
 using ValheimTwitch.Gui;
 using ValheimTwitch.Twitch.API.Helix;
 
-namespace ValheimTwitch
+namespace ValheimTwitch.Config
 {
-    static class RewardsConfig
+    public class RewardsConfig
     {
-        private const string REWARDS_SECTION = "Rewards";
-        private static Dictionary<string, JToken> rewards = new Dictionary<string, JToken>();
+        private string sectionName;
+        private Dictionary<string, JToken> rewards = new Dictionary<string, JToken>();
 
-        public static void Load()
+        public RewardsConfig(string sectionName)
+        {
+            this.sectionName = sectionName;
+        }
+
+        public void Load()
         {
             Log.Info("RewardsConfig.Load()");
             var keys = GetConfigDefinitions();
@@ -21,9 +26,9 @@ namespace ValheimTwitch
             foreach (var key in keys)
             {
                 Log.Info($"Config entry iterated {key.Key}");
-                if (key.Section == REWARDS_SECTION)
+                if (key.Section == sectionName)
                 {
-                    var entry = Plugin.Instance.Config.Bind(REWARDS_SECTION, key.Key, "");
+                    var entry = Plugin.Instance.Config.Bind(sectionName, key.Key, "");
                     if (entry.Value.Length > 0)
                     {
                         Log.Info($"Config entry loading {key.Key} {entry.Value}");
@@ -35,37 +40,25 @@ namespace ValheimTwitch
             }
         }
 
-        public static void Sync(List<Reward> twitchRewards)
+        public void Sync(List<Reward> twitchRewards)
         {
-            //foreach (var twichReward in twitchRewards)
-            //{
-            //    if (!rewards.ContainsKey(twichReward.Id))
-            //    {
-            //        Delete(twichReward.Id, false);
-            //    }
-            //}
-            //Save();
+            foreach (var id in rewards.Keys)
+            {
+                var rewardExists = twitchRewards.Any(reward => reward.Id == id);
+                if (!rewardExists)
+                {
+                    Delete(id, false);
+                }
+            }
+            Save();
         }
 
         public static void Save()
         {
-            foreach (var entry in rewards)
-            {
-                //ConfigEntry<string> configEntry;
-                //if (!Plugin.Instance.Config.TryGetEntry(REWARDS_SECTION, entry.Key, out configEntry))
-                //{
-                //    Plugin.Instance.Config.AddSetting(REWARDS_SECTION, entry.Key, "");
-                //}
-                //Plugin.Instance.Config["rewards", entry.Key].BoxedValue = entry.Value.ToString(Newtonsoft.Json.Formatting.Indented);
-                
-                //var bind = Plugin.Instance.Config.Bind(
-                //    REWARDS_SECTION, entry.Key, JToken.FromObject(new SettingsMessageData()).ToString(Newtonsoft.Json.Formatting.None));
-                //bind.Value = entry.Value.ToString(Newtonsoft.Json.Formatting.None);
-            }
             Plugin.Instance.Config.Save();
         }
 
-        public static SettingsMessageData GetSettings(string key)
+        public SettingsMessageData GetSettings(string key)
         {
             JToken data;
             if (rewards.TryGetValue(key, out data))
@@ -75,20 +68,20 @@ namespace ValheimTwitch
             return null;
         }
 
-        public static void Set(string key, SettingsMessageData data, bool save = true)
+        public void Set(string key, SettingsMessageData data, bool save = true)
         {
             rewards[key] = JToken.FromObject(data);
 
-            var bind = Plugin.Instance.Config.Bind(REWARDS_SECTION, key, "");
+            var bind = Plugin.Instance.Config.Bind(sectionName, key, "");
             bind.Value = rewards[key].ToString(Newtonsoft.Json.Formatting.None);
 
             if (save)
                 Save();
         }
 
-        public static void Delete(string key, bool save = true)
+        public void Delete(string key, bool save = true)
         {
-            var configDefinition = new ConfigDefinition(REWARDS_SECTION, key);
+            var configDefinition = new ConfigDefinition(sectionName, key);
             Plugin.Instance.Config.Remove(configDefinition);
             GetOrphanedEntries().Remove(configDefinition);
 
