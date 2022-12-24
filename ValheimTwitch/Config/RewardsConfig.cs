@@ -20,21 +20,17 @@ namespace ValheimTwitch.Config
 
         public void Load()
         {
-            Log.Info("RewardsConfig.Load()");
             var keys = GetConfigDefinitions();
             Dictionary<string, JToken> tokens = new Dictionary<string, JToken>(16); 
             foreach (var key in keys)
             {
-                Log.Info($"Config entry iterated {key.Key}");
                 if (key.Section == sectionName)
                 {
                     var entry = Plugin.Instance.Config.Bind(sectionName, key.Key, "");
                     if (entry.Value.Length > 0)
                     {
-                        Log.Info($"Config entry loading {key.Key} {entry.Value}");
                         var value = JToken.Parse(entry.Value);
                         rewards[key.Key] = value;
-                        Log.Info($"Config entry loaded {key.Key} {value}");
                     }
                 }
             }

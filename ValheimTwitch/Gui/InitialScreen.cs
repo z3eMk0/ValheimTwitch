@@ -7,6 +7,7 @@ namespace ValheimTwitch.Gui
 {
     class InitialScreen
     {
+        private GameObject mainPanelObject;
         private GameObject affiliateTextObject;
         private GameObject userTextOjbect;
         private GameObject rewardsSettingsButtonObject;
@@ -38,18 +39,18 @@ namespace ValheimTwitch.Gui
 
         private void CreateMainPanel()
         {
-            var panelObject = GUIManager.Instance.CreateWoodpanel(
+            mainPanelObject = GUIManager.Instance.CreateWoodpanel(
                 parent: GUIManager.CustomGUIFront.transform,
                 anchorMin: new Vector2(0f, 0.66f),
                 anchorMax: new Vector2(0.33f, 1f),
                 position: new Vector2(0f, 0f),
                 width: 300f,
-                height: 100f,
+                height: 150f,
                 draggable: true);
             
             this.affiliateTextObject = GUIManager.Instance.CreateText(
                 text: "You need to be a Twitch affiliate or partner to use rewards",
-                parent: panelObject.transform,
+                parent: mainPanelObject.transform,
                 anchorMin: new Vector2(0.5f, 1f),
                 anchorMax: new Vector2(0.5f, 1f),
                 position: new Vector2(0f, -60f),
@@ -65,7 +66,7 @@ namespace ValheimTwitch.Gui
             
             this.rewardsSettingsButtonObject = GUIManager.Instance.CreateButton(
                 text: "View rewards",
-                parent: panelObject.transform,
+                parent: mainPanelObject.transform,
                 anchorMin: new Vector2(0.5f, 1f),
                 anchorMax: new Vector2(0.5f, 1f),
                 position: new Vector2(0f, -40f),
@@ -77,7 +78,7 @@ namespace ValheimTwitch.Gui
             
             GUIManager.Instance.CreateText(
                 text: "Welcome",
-                parent: panelObject.transform,
+                parent: mainPanelObject.transform,
                 anchorMin: new Vector2(0f, 1f),
                 anchorMax: new Vector2(0f, 1f),
                 position: new Vector2(40f, -20f),
@@ -92,7 +93,7 @@ namespace ValheimTwitch.Gui
             
             this.userTextOjbect = GUIManager.Instance.CreateText(
                 text: "",
-                parent: panelObject.transform,
+                parent: mainPanelObject.transform,
                 anchorMin: new Vector2(0f, 1f),
                 anchorMax: new Vector2(0f, 1f),
                 position: new Vector2(155f, -20f),
@@ -108,10 +109,10 @@ namespace ValheimTwitch.Gui
 
             this.loginButtonObject = GUIManager.Instance.CreateButton(
                 text: "Login to Twitch",
-                parent: panelObject.transform,
+                parent: mainPanelObject.transform,
                 anchorMin: new Vector2(0.5f, 1f),
                 anchorMax: new Vector2(0.5f, 1f),
-                position: new Vector2(0f, -90f),
+                position: new Vector2(0f, -100f),
                 width: 200f,
                 height: 30f);
             this.loginButtonObject.SetActive(false);
@@ -120,10 +121,10 @@ namespace ValheimTwitch.Gui
 
             this.logoutButtonObject = GUIManager.Instance.CreateButton(
                text: "Logout from Twitch",
-               parent: panelObject.transform,
+               parent: mainPanelObject.transform,
                anchorMin: new Vector2(0.5f, 1f),
                anchorMax: new Vector2(0.5f, 1f),
-               position: new Vector2(0f, -90f),
+               position: new Vector2(0f, -100f),
                width: 200f,
                height: 30f);
             this.logoutButtonObject.SetActive(false);
@@ -135,14 +136,21 @@ namespace ValheimTwitch.Gui
 
         public void RefreshMainPanel()
         {
+            if (Plugin.Instance.isInGame)
+            {
+                mainPanelObject.SetActive(false);
+                return;
+            }
+            mainPanelObject.SetActive(true);
             var user = Plugin.Instance.GetUser();
             if (user != null)
             {
                 var text = this.userTextOjbect.GetComponent<Text>();
                 text.text = user.DisplayName;
                 this.userTextOjbect.SetActive(true);
-                this.affiliateTextObject.SetActive(!Plugin.Instance.twitchClient.HasChannelPoints());
-                this.rewardsSettingsButtonObject.SetActive(true);
+                var hasChannelPoints = Plugin.Instance.twitchClient.HasChannelPoints();
+                this.affiliateTextObject.SetActive(!hasChannelPoints);
+                this.rewardsSettingsButtonObject.SetActive(hasChannelPoints);
                 this.loginButtonObject.SetActive(false);
                 this.logoutButtonObject.SetActive(true);
             }
@@ -171,6 +179,7 @@ namespace ValheimTwitch.Gui
             if (Plugin.Instance.GetUser() != null)
             {
                 PluginConfig.DeleteKey("twitchAuthToken");
+                Plugin.Instance.InitConfig();
                 Plugin.Instance.twitchClient.user = null;
                 this.RefreshMainPanel();
             }

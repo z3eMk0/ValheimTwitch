@@ -92,7 +92,7 @@ namespace ValheimTwitch
             SceneManager.LoadScene("start");
 #endif
 
-            configProvider = ConfigFactory.GetProvider();
+            InitConfig();
             TwitchConnect();
 
             SceneManager.activeSceneChanged += OnSceneChanged;
@@ -106,13 +106,18 @@ namespace ValheimTwitch
             new Twitch.Test.RedeemServer().Start();
         }
 
+        public void InitConfig()
+        {
+            configProvider = ConfigFactory.GetProvider();
+        }
+
         private void OnToken(object sender, TokenArgs e)
         {
             PluginConfig.SetObject("twitchAuthToken", new {
                 accessToken = e.Token.AccessToken,
                 refreshToken = e.Token.RefreshToken
             });
-
+            InitConfig();
             TwitchConnect();
             UpdateRwardsList();
         }
@@ -192,7 +197,10 @@ namespace ValheimTwitch
             {
                 twitchCustomRewards = twitchClient?.GetCustomRewards();
                 twitchRewards = twitchClient?.GetRewards();
-                Plugin.Instance.configProvider.Rewards.Sync(twitchRewards.Data);
+                if (twitchRewards != null)
+                {
+                    configProvider.Rewards.Sync(twitchRewards.Data);
+                }
                 FejdStartupUpdatePatch.updateUI = true;
 
                 if (callback != null)

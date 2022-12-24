@@ -27,3 +27,30 @@ curl -X POST 'http://localhost:8080/mock/channel_points/custom_rewards?broadcast
 
 Triggering redemption of a channel reward using the docs https://dev.twitch.tv/docs/cli/event-command
 twitch event trigger add-redemption -t 70848800 -i 14a81a9c-d959-2097-c9ee-674a28ab463f -F http://localhost:42248/eventsub/
+
+Set the mode to "Test" in the mod config file (Valheim installation dir\BepInEx\config\dev.skarab42.valheim.twitch.cfg) and populate the config properties:
+
+[General]
+
+## Sets the mod in a live or a test mode.
+# Setting type: Mode
+# Default value: Live
+# Acceptable values: Live, Test
+mode = Test
+
+[Test]
+
+## Id of the Twitch mock client.
+# Setting type: String
+# Default value: 
+clientId = c89e30cd3b2ba17fdb53a14ac44ff8
+
+## Access token of the Twitch mock user.
+# Setting type: String
+# Default value: 
+accessToken = e4fe9afe7baa4c5
+
+## URL of the Twitch mock server.
+# Setting type: String
+# Default value: 
+mockServerUrl = http://localhost:8080/mock
