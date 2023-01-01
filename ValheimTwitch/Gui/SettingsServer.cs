@@ -20,9 +20,17 @@ namespace ValheimTwitch.Gui
 
         public void OpenSettings()
         {
+            if (server == null)
+            {
+                Start();
+            }
+            Application.OpenURL($"http://{SERVER_HOST}:{SERVER_PORT}/settings");
+        }
+
+        public void Start()
+        {
             server = new Server(SERVER_HOST, SERVER_PORT, false, Route);
             server.Start();
-            Application.OpenURL($"http://{SERVER_HOST}:{SERVER_PORT}/settings");
         }
 
         public void Stop()

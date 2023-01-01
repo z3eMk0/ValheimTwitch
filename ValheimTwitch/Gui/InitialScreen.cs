@@ -17,6 +17,11 @@ namespace ValheimTwitch.Gui
 
         public void Start()
         {
+            if (this.server == null)
+            {
+                this.server = new SettingsServer();
+                this.server.Start();
+            }
             GUIManager.OnCustomGUIAvailable += Draw;
         }
 
@@ -187,10 +192,6 @@ namespace ValheimTwitch.Gui
 
         private void ShowRewardsSettings()
         {
-            if (this.server == null)
-            {
-                this.server = new SettingsServer();
-            }
             this.server.OpenSettings();
         }
     }

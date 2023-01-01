@@ -10,7 +10,7 @@ namespace ValheimTwitch.Events
         internal static void Run(Redemption redemption, SpawnCreatureData data)
         {
             var creature = data.Creature;
-            var level = data.Level;
+            var level = data.Level + 1;
             var count = data.Count;
             var offset = data.Distance;
             var tamed = data.Tamed;

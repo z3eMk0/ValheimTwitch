@@ -103,6 +103,8 @@
     <Compile Include="Actions\HUDMessageAction.cs" />
     <Compile Include="Actions\RavenMessageAction.cs" />
     <Compile Include="Actions\SpawnCreatureAction.cs" />
+    <Compile Include="Actions\SupplyCartAction.cs" />
+    <Compile Include="Actions\SupplyCartLootTables.cs" />
     <Compile Include="Config\ConfigFactory.cs" />
     <Compile Include="Config\IConfigProvider.cs" />
     <Compile Include="Config\LiveConfig.cs" />
@@ -113,6 +115,8 @@
     <Compile Include="Gui\TabGroup.cs" />
     <Compile Include="Gui\TabPanel.cs" />
     <Compile Include="Helpers\CustomInput.cs" />
+    <Compile Include="Helpers\LootTable.cs" />
+    <Compile Include="Helpers\RandomGen.cs" />
     <Compile Include="Helpers\StringExt.cs" />
     <Compile Include="Helpers\WAV.cs" />
     <Compile Include="Patches\CharacterPatch.cs" />
@@ -215,7 +219,7 @@
     <Error Condition="!Exists('..\packages\JotunnLib.2.10.0\build\JotunnLib.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\JotunnLib.2.10.0\build\JotunnLib.props'))" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetPath)" "$(ProjectDir)Dist\$(TargetFileName)"
+    <PostBuildEvent>copy "$(TargetPath)" "$(ProjectDir)..\dist\$(TargetFileName)"
 	copy "$(TargetPath)" "D:\SteamLibrary\steamapps\common\Valheim\BepInEx\plugins\$(TargetFileName)"</PostBuildEvent>
   </PropertyGroup>
 </Project>

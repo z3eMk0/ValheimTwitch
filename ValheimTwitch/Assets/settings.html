@@ -128,6 +128,16 @@
       <select id="actionName"></select>
     </div>
   </template>
+  <template id="supplyForm">
+    <div class="pure-control-group">
+      <label for="supplyType">Type</label>
+      <select id="supplyType"></select>
+    </div>
+    <div class="pure-control-group">
+      <label for="supplyDistance">Distance</label>
+      <input id="supplyDistance" type="number">
+    </div>
+  </template>
   <script>
     async function loadRewards() {
       let response = await fetch("/rewards");
@@ -206,6 +216,9 @@
       }
       if (action === rewardTypes.player.value) {
         return PlayerForm.getSettings();
+      }
+      if (action === rewardTypes.supply.value) {
+        return SupplyForm.getSettings();
       }
     }
     function openCreateRewardForm(e) {
@@ -295,6 +308,8 @@
         form = EnvironmentForm.create(rewardSettings || new EnvironmentData());
       } else if (selectedValue === rewardTypes.player.value) {
         form = PlayerForm.create(rewardSettings || new PlayerData());
+      } else if (selectedValue === rewardTypes.supply.value) {
+        form = SupplyForm.create(rewardSettings || new SupplyCartData());
       }
       if (form) {
         row.after(form);
@@ -381,6 +396,18 @@
         let creatureTamedCheckbox = form.querySelector("#creatureTamed");
         creatureTamedCheckbox.checked = spawnData.tamed;
 
+        let creatureChanged = () => {
+          var creature = creatureTypeSelect.selectedOptions[0].value;
+          if (this.untamableCreatures.includes(creature)) {
+            creatureTamedCheckbox.disabled = true;
+            creatureTamedCheckbox.checked = false;
+          } else {
+            creatureTamedCheckbox.disabled = false;
+          }
+        };
+        creatureTypeSelect.addEventListener("change", creatureChanged);
+        creatureChanged();
+
         return form;
       }
       static getSettings() {
@@ -417,10 +444,20 @@
         "Crow",
         "Deer",
         "Fish1",
+        "Fish10",
+        "Fish11",
+        "Fish12",
         "Fish2",
         "Fish3",
         "Fish4_cave",
+        "Fish5",
+        "Fish6",
+        "Fish7",
+        "Fish8",
+        "Fis9",
         "Gull",
+        "Flies",
+        "FireFlies",
         "Leviathan",
         "Eikthyr",
         "gd_king",
@@ -573,6 +610,40 @@
       }
       static playerActions = [{ value: "puke", label: "Puke" }, { value: "heal", label: "Heal" }];
     }
+    class SupplyForm {
+      static create(eventData) {
+        let template = document.getElementById("supplyForm");
+        let form = template.content.cloneNode(true);
+
+        let supplyTypeSelect = form.querySelector("#supplyType");
+        this.populateSupplyTypeSelect(supplyTypeSelect, eventData.type);
+
+        let supplyDistanceInput = form.querySelector("#supplyDistance");
+        supplyDistanceInput.value = eventData.distance;
+
+        return form;
+      }
+      static getSettings() {
+        let settings = new SupplyCartData();
+        settings.type = document.getElementById("supplyType").selectedOptions[0].value;
+        let distance = Number.parseInt(document.getElementById("supplyDistance").value, 10);
+        if (!Number.isNaN(distance)) {
+          settings.distance = distance;
+        }
+        return settings;
+      }
+      static populateSupplyTypeSelect(select, selectedValue) {
+        let options = this.supplyTypes.map((item) => {
+          let option = document.createElement("option");
+          option.label = item.label;
+          option.value = item.value;
+          option.selected = item.value === selectedValue;
+          return option;
+        });
+        select.replaceChildren(...options);
+      }
+      static supplyTypes = [{ value: "food", label: "Food" }, { value: "mats", label: "Materials" }];
+    }
 
     const rewardTypes = {
       none: {
@@ -602,6 +673,10 @@
       player: {
         label: "Player action",
         title: "Player buffs and debuffs",
+      },
+      supply: {
+        label: "Supply cart",
+        title: "Drops a cart with supplies",
       }
     };
     Object.getOwnPropertyNames(rewardTypes).forEach(prop => rewardTypes[prop].value = prop);
@@ -623,7 +698,7 @@
     }
     class SpawnCreatureData {
       action = rewardTypes.spawn.value;
-      creature = 0;
+      creature = "";
       level = 0;
       count = 1;
       distance = 10;
@@ -647,6 +722,11 @@
     class PlayerData {
       action = rewardTypes.player.value;
       name = "";
+    }
+    class SupplyCartData {
+      action = rewardTypes.supply.value;
+      type = "";
+      distance = 1;
     }
 
     (function () {

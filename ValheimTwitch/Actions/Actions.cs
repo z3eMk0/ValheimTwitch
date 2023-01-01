@@ -44,6 +44,9 @@ namespace ValheimTwitch.Events
                     case PlayerData.ACTION_TYPE:
                         PlayerAction.Run(redemption, data as PlayerData);
                         break;
+                    case SupplyCartData.ACTION_TYPE:
+                        SupplyCartAction.Run(redemption, data as SupplyCartData);
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }

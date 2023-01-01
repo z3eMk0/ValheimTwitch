@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using ValheimTwitch.Config;
 using ValheimTwitch.Events;
 using ValheimTwitch.Twitch.PubSub.Messages;
 using WatsonWebserver;

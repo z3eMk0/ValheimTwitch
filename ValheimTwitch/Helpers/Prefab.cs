@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using ValheimTwitch.Patches;
 
@@ -111,7 +112,74 @@ namespace ValheimTwitch.Helpers
                 Log.Error(ex.ToString());
             }
         }
-    
+
+        public static void SpawnSupplyCart(IEnumerable<LootItem> drops, float offset = 100, string name = null)
+        {
+            try
+            {
+                var prefab = ZNetScene.instance.GetPrefab("Cart");
+                if (!Player.m_localPlayer)
+                {
+                    Log.Error("Missing local player");
+                    return;
+                }
+
+                Vector3 b = UnityEngine.Random.insideUnitSphere * offset;
+                var position = Player.m_localPlayer.transform.position + Player.m_localPlayer.transform.forward * 2f + Vector3.up * 50f + b;
+
+                Log.Info("Spawning position " + position.ToString());
+
+                var instance = UnityEngine.Object.Instantiate(prefab, position, Quaternion.identity);
+
+                if (!instance)
+                {
+                    Log.Error("Missing prefab instance");
+                    return;
+                }
+
+                //var character = instance.GetComponent<Character>();
+                //Log.Info($"Supply character {character}");
+                //if (character == null)
+                //    return;
+
+                //ZNetView znview = character.GetComponent<ZNetView>();
+                //Tameable component = SetTameable(znview, instance);
+
+                //if (name != null)
+                //    SetName(znview, character, name, false);
+
+                var piece = instance.GetComponent<Piece>();
+                if (piece != null)
+                {
+                    var wnt = piece.GetComponent<WearNTear>();
+                    var nviewField = wnt.GetType().GetField("m_nview", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    if (nviewField != null)
+                    {
+                        var nview = (ZNetView)nviewField.GetValue(wnt);
+                        nview.GetZDO().Set("health", 50f);
+                    }
+                }
+
+                var container = instance.GetComponentInChildren<Container>();
+                if (container != null)
+                {
+                    var inventoryField = container.GetType().GetField("m_inventory", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    if (inventoryField != null)
+                    {
+                        var invetory = (Inventory)inventoryField.GetValue(container);
+                        foreach (var drop in drops)
+                        {
+                            invetory.AddItem(drop.Name, drop.Stack, drop.Quality, 0, 0, drop.CrafterName);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.ToString());
+            }
+        }
+
         public static void ListPrefabs()
         {
             var prefabs = ZNetScene.instance.GetPrefabNames();

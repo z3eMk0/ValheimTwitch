@@ -29,6 +29,8 @@ namespace ValheimTwitch.Gui
                         return token.ToObject<EnvironmentData>();
                     case PlayerData.ACTION_TYPE:
                         return token.ToObject<PlayerData>();
+                    case SupplyCartData.ACTION_TYPE:
+                        return token.ToObject<SupplyCartData>();
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -180,6 +182,26 @@ namespace ValheimTwitch.Gui
         }
         [JsonProperty("name")]
         public string Name { set; get; }
+    }
+
+    public class SupplyCartData : SettingsMessageData
+    {
+        public new const string ACTION_TYPE = "supply";
+        public const string FOOD_TYPE = "food";
+        public const string MATS_TYPE = "mats";
+        public override string Action
+        {
+            get
+            {
+                return ACTION_TYPE;
+            }
+        }
+
+        [JsonProperty("type")]
+        public string Type { set; get; }
+
+        [JsonProperty("distance")]
+        public int Distance { set; get; }
     }
 
     public class KeyCodeArgs : EventArgs
