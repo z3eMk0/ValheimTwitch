@@ -220,6 +220,6 @@
   </Target>
   <PropertyGroup>
     <PostBuildEvent>copy "$(TargetPath)" "$(ProjectDir)..\dist\$(TargetFileName)"
-	copy "$(TargetPath)" "D:\SteamLibrary\steamapps\common\Valheim\BepInEx\plugins\$(TargetFileName)"</PostBuildEvent>
+	copy "$(TargetPath)" "E:\SteamLibrary\steamapps\common\Valheim\BepInEx\plugins\$(TargetFileName)"</PostBuildEvent>
   </PropertyGroup>
 </Project>

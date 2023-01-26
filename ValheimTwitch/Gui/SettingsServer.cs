@@ -137,6 +137,15 @@ namespace ValheimTwitch.Gui
                         await ServeHTML(context, 200, "Updated");
                     }
                 }
+                else if (context.Request.Method == HttpMethod.PATCH
+                    && context.Request.Url.RawWithoutQuery.StartsWith("/rewards/"))
+                {
+                    var id = context.Request.Url.RawWithoutQuery.Substring("/rewards/".Length);
+                    // supports only is_enabled for now
+                    var rewardSettings = context.Request.DataAsJsonObject<RewardSettings>();
+                    Plugin.Instance.twitchClient.ToggleReward(id, rewardSettings.data.IsEnabled);
+                    await ServeHTML(context, 200, "Updated");
+                }
                 else if (context.Request.Method == HttpMethod.DELETE
                     && context.Request.Url.RawWithoutQuery.StartsWith("/rewards/"))
                 {

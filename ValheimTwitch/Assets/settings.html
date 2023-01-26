@@ -16,6 +16,7 @@
       <table id="rewards" class="pure-table pure-table-bordered" style="width: 100%;">
         <thead>
           <tr>
+            <th>Enabled</th>
             <th>Cost</th>
             <th>Title</th>
             <th>Edit</th>
@@ -172,6 +173,24 @@
         }
       }
     }
+    async function toggleRewardClicked(e, reward) {
+      e.stopPropagation();
+      let checked = e.target.checked;
+      let response = await fetch("/rewards/" + reward.data.id, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            data: {
+              is_enabled: checked,
+            },
+          }),
+        });
+        if (response.status === 200) {
+          await loadRewards();
+        }
+    }
     function cancelRewardClicked(e) {
       e.preventDefault();
       e.stopPropagation();
@@ -323,6 +342,19 @@
         rows = rewards.map(reward => {
           let row = document.createElement("tr");
 
+          let isEnabledCell = document.createElement("td");
+          let isEnabledCheckbox = document.createElement("input");
+          isEnabledCheckbox.type = "checkbox";
+          isEnabledCheckbox.checked = reward.data.is_enabled;
+          if (reward.isManagable) {
+            isEnabledCheckbox.disabled = false;
+            isEnabledCheckbox.addEventListener("change", (e) => toggleRewardClicked(e, reward));
+          } else {
+            isEnabledCheckbox.disabled = true;
+          }
+          isEnabledCell.appendChild(isEnabledCheckbox);
+          row.appendChild(isEnabledCell);
+
           let costCell = document.createElement("td");
           costCell.appendChild(document.createTextNode(reward.data.cost));
           row.appendChild(costCell);
@@ -429,7 +461,7 @@
         return settings;
       }
       static populateCreaturesSelect(select, selectedValue) {
-        let options = this.creatures.map((item) => {
+        let options = this.creatures.sort((a, b) => a.label.localeCompare(b.label)).map((item) => {
           let option = document.createElement("option");
           option.label = item.label;
           option.value = item.value;
@@ -522,7 +554,7 @@
         });
         select.replaceChildren(...options);
       }
-      static events = [{ value: "bats", label: "Bats" }, { value: "blobs", label: "Blobs" }, { value: "foresttrolls", label: "Trolls" }, { value: "skeletons", label: "Skeletons" }, { value: "surtlings", label: "Surtlings" }, { value: "wolves", label: "Wolves" }, { value: "army_bonemass", label: "Bonemass Army" }, { value: "army_eikthyr", label: "Eikthyr Army" }, { value: "army_goblin", label: "Yagluth army" }, { value: "army_moder", label: "Moder Army" }, { value: "army_theelder", label: "Elder Army" }, { value: "army_seekers", label: "Seekers Army" }, { value: "army_gjall", label: "Gjall Army" }, { value: "boss_bonemass", label: "boss_bonemass" }, { value: "boss_eikthyr", label: "boss_eikthyr" }, { value: "boss_gdking", label: "boss_gdking" }, { value: "boss_goblinking", label: "boss_goblinking" }, { value: "boss_moder", label: "boss_moder" }];
+      static events = [{ value: "bats", label: "Bats" }, { value: "blobs", label: "Blobs" }, { value: "foresttrolls", label: "Trolls" }, { value: "skeletons", label: "Skeletons" }, { value: "surtlings", label: "Surtlings" }, { value: "wolves", label: "Wolves" }, { value: "army_bonemass", label: "Bonemass Army" }, { value: "army_eikthyr", label: "Eikthyr Army" }, { value: "army_goblin", label: "Yagluth army" }, { value: "army_moder", label: "Moder Army" }, { value: "army_theelder", label: "Elder Army" }, { value: "army_seekers", label: "Seekers Army" }, { value: "army_gjall", label: "Gjall Army" }];
     }
     class EnvironmentForm {
       static create(environmentData) {

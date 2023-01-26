@@ -141,6 +141,7 @@ namespace ValheimTwitch.Gui
 
         public void RefreshMainPanel()
         {
+            Log.Info($"mainPanelObject {mainPanelObject}");
             if (Plugin.Instance.isInGame)
             {
                 mainPanelObject.SetActive(false);
