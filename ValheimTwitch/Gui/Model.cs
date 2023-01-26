@@ -202,6 +202,10 @@ namespace ValheimTwitch.Gui
 
         [JsonProperty("distance")]
         public int Distance { set; get; }
+        [JsonProperty("count")]
+        public int Count { set; get; }
+        [JsonProperty("interval")]
+        public int Interval { set; get; }
     }
 
     public class KeyCodeArgs : EventArgs

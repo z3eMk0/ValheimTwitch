@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using ValheimTwitch.Gui;
 using ValheimTwitch.Helpers;
 using ValheimTwitch.Patches;
@@ -11,13 +12,35 @@ namespace ValheimTwitch.Events
         internal static void Run(Redemption redemption, SupplyCartData data)
         {
             var type = data.Type;
-            var drops = GetDrops(type);
             var offset = data.Distance;
+            var count = data.Count;
+            var interval = data.Interval;
 
             var name = redemption.User.DisplayName;
-            Log.Info($"Supplying {drops}");
 
-            ConsoleUpdatePatch.AddAction(() => Prefab.SpawnSupplyCart(drops, offset, name));
+            if (Player.m_localPlayer != null)
+            {
+                Player.m_localPlayer.Message(MessageHud.MessageType.Center, $"A gift from {name}");
+            }
+
+            if (count == 1)
+            {
+                var drops = GetDrops(type);
+                Log.Info($"Supplying {drops}");
+                ConsoleUpdatePatch.AddAction(() => Prefab.SpawnSupplyCart(drops, offset));
+            }
+            else
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    Task.Delay(i * interval * 1000).ContinueWith(t =>
+                    {
+                        var drops = GetDrops(type);
+                        Log.Info($"Supplying {drops}");
+                        ConsoleUpdatePatch.AddAction(() => Prefab.SpawnSupplyCart(drops, offset));
+                    });
+                }
+            }
         }
 
         private static IEnumerable<LootItem> GetDrops(string type)

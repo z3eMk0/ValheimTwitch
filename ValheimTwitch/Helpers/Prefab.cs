@@ -113,7 +113,7 @@ namespace ValheimTwitch.Helpers
             }
         }
 
-        public static void SpawnSupplyCart(IEnumerable<LootItem> drops, float offset = 100, string name = null)
+        public static void SpawnSupplyCart(IEnumerable<LootItem> drops, float offset)
         {
             try
             {

@@ -138,6 +138,14 @@
       <label for="supplyDistance">Distance</label>
       <input id="supplyDistance" type="number">
     </div>
+    <div class="pure-control-group">
+      <label for="supplyCount">Count</label>
+      <input id="supplyCount" type="number">
+    </div>
+    <div class="pure-control-group">
+      <label for="supplyInterval">Interval (in seconds)</label>
+      <input id="supplyInterval" type="number">
+    </div>
   </template>
   <script>
     async function loadRewards() {
@@ -652,6 +660,12 @@
 
         let supplyDistanceInput = form.querySelector("#supplyDistance");
         supplyDistanceInput.value = eventData.distance;
+        
+        let supplyCountInput = form.querySelector("#supplyCount");
+        supplyCountInput.value = eventData.count;
+        
+        let supplyIntervalInput = form.querySelector("#supplyInterval");
+        supplyIntervalInput.value = eventData.interval;
 
         return form;
       }
@@ -661,6 +675,14 @@
         let distance = Number.parseInt(document.getElementById("supplyDistance").value, 10);
         if (!Number.isNaN(distance)) {
           settings.distance = distance;
+        }
+        let count = Number.parseInt(document.getElementById("supplyCount").value, 10);
+        if (!Number.isNaN(count)) {
+          settings.count = count;
+        }
+        let interval = Number.parseInt(document.getElementById("supplyInterval").value, 10);
+        if (!Number.isNaN(interval)) {
+          settings.interval = interval;
         }
         return settings;
       }
@@ -759,6 +781,8 @@
       action = rewardTypes.supply.value;
       type = "";
       distance = 1;
+      count = 1;
+      interval = 1;
     }
 
     (function () {
