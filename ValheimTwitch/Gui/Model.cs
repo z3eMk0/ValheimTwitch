@@ -189,6 +189,7 @@ namespace ValheimTwitch.Gui
         public new const string ACTION_TYPE = "supply";
         public const string FOOD_TYPE = "food";
         public const string MATS_TYPE = "mats";
+        public const string GEMS_TYPE = "gems";
         public override string Action
         {
             get

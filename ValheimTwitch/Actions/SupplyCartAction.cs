@@ -45,58 +45,20 @@ namespace ValheimTwitch.Events
 
         private static IEnumerable<LootItem> GetDrops(string type)
         {
-            if (type == "food")
+            ItemType itemType = ItemType.None;
+            if (type == SupplyCartData.FOOD_TYPE)
             {
-                return GetFood();
+                itemType = ItemType.Food;
             }
-            if (type == "mats")
+            else if (type == SupplyCartData.MATS_TYPE)
             {
-                return GetMats();
+                itemType = ItemType.Mats;
             }
-            Log.Info($"Unsupported supply type \"type\"");
-            return new List<LootItem>(0);
-        }
-
-        private static IEnumerable<LootItem> GetFood()
-        {
-            return GetFoodLootTable().GetLoot();
-        }
-
-        private static IEnumerable<LootItem> GetMats()
-        {
-            return GetMatsLootTable().GetLoot();
-        }
-
-        private static LootTable GetFoodLootTable()
-        {
-            return SupplyCartLootTables.GetTable(Player.m_localPlayer, ItemType.Food);
-        }
-
-        private static LootTable GetMatsLootTable()
-        {
-            var table = new LootTable
+            else if (type == SupplyCartData.GEMS_TYPE)
             {
-                MinCount = 2,
-                MaxCount = 5
-            };
-
-            //table.Entries.Add(new StackLootEntry
-            //{
-            //    Name = "FineWood",
-            //    Chance = 5,
-            //    MinCount = 4,
-            //    MaxCount = 6
-            //});
-
-            //table.Entries.Add(new StackLootEntry
-            //{
-            //    Name = "RoundLog",
-            //    Chance = 5,
-            //    MinCount = 8,
-            //    MaxCount = 12
-            //});
-
-            return table;
+                itemType = ItemType.Gems;
+            }
+            return SupplyCartLootTables.GetTable(Player.m_localPlayer, itemType).GetLoot();
         }
     }
 }
