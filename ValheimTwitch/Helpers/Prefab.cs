@@ -137,17 +137,6 @@ namespace ValheimTwitch.Helpers
                     return;
                 }
 
-                //var character = instance.GetComponent<Character>();
-                //Log.Info($"Supply character {character}");
-                //if (character == null)
-                //    return;
-
-                //ZNetView znview = character.GetComponent<ZNetView>();
-                //Tameable component = SetTameable(znview, instance);
-
-                //if (name != null)
-                //    SetName(znview, character, name, false);
-
                 var piece = instance.GetComponent<Piece>();
                 if (piece != null)
                 {

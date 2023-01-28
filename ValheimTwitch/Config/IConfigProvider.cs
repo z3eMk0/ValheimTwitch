@@ -1,4 +1,5 @@
-﻿using ValheimTwitch.Twitch.Auth;
+﻿using UnityEngine;
+using ValheimTwitch.Twitch.Auth;
 
 namespace ValheimTwitch.Config
 {
@@ -8,5 +9,6 @@ namespace ValheimTwitch.Config
         string HelixUrl { get; }
         Credentials Credentials { get; }
         bool EnableRewardsAutomatically { get; }
+        KeyCode IgnoreRewardsKey { get; }
     }
 }

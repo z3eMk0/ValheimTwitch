@@ -1,4 +1,5 @@
-﻿using ValheimTwitch.Twitch.Auth;
+﻿using UnityEngine;
+using ValheimTwitch.Twitch.Auth;
 
 namespace ValheimTwitch.Config
 {
@@ -20,6 +21,8 @@ namespace ValheimTwitch.Config
         public Credentials Credentials { get; private set; }
 
         public bool EnableRewardsAutomatically { get; set; }
+
+        public KeyCode IgnoreRewardsKey { get; set; }
 
         public TestConfig()
         {

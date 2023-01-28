@@ -38,6 +38,7 @@ namespace ValheimTwitch
         public bool isInGame = false;
         public bool isRewardsEnabled = false;
         public bool isHuginIntroShown = false;
+        public bool ignoreRewards = false;
         public static bool isRewardUpdating = false;
 
         public IConfigProvider configProvider;

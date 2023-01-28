@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using UnityEngine;
 using ValheimTwitch.Twitch.Auth;
 
 namespace ValheimTwitch.Config
@@ -23,18 +24,12 @@ namespace ValheimTwitch.Config
             get => HELIX_URL;
         }
 
-        public Credentials Credentials
-        {
-            get;
-            private set;
-        }
+        public Credentials Credentials { get; private set; }
         
-        public bool EnableRewardsAutomatically
-        {
-            get;
-            set;
-        }
-        
+        public bool EnableRewardsAutomatically { get; set; }
+
+        public KeyCode IgnoreRewardsKey { get; set; }
+
         public LiveConfig()
         {
             var token = PluginConfig.GetObject("twitchAuthToken");

@@ -60,6 +60,14 @@ namespace ValheimTwitch.Patches
                 }).Start();
             }
 
+            if (CustomInput.GetKeyDown("ToggleIgnoringRewards"))
+            {
+                Plugin.Instance.ignoreRewards = !Plugin.Instance.ignoreRewards;
+                var message = Plugin.Instance.ignoreRewards ? "enabled" : "disabled";
+                Log.Info($"Ignoring rewards {message}.");
+                return;
+            }
+
             if (!Plugin.Instance.isInGame || !CustomInput.GetKeyDown("Whistle"))
                 return;
 

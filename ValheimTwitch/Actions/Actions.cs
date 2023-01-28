@@ -19,6 +19,10 @@ namespace ValheimTwitch.Events
             try
             {
                 var type = data.Action;
+                if (IgnoreRewards())
+                {
+                    return;
+                }
 
                 Log.Info($"RunAction: {redemption.Reward.Id} -> type: {type}");
 
@@ -55,6 +59,11 @@ namespace ValheimTwitch.Events
             {
                 Log.Error("RunAction Error >>> " + ex.ToString());
             }
+        }
+
+        private static bool IgnoreRewards()
+        {
+            return Plugin.Instance.ignoreRewards;
         }
     }
 }
