@@ -147,6 +147,24 @@
       <input id="supplyInterval" type="number">
     </div>
   </template>
+  <template id="meteorForm">
+    <div class="pure-control-group">
+      <label for="meteorType">Type</label>
+      <select id="meteorType"></select>
+    </div>
+    <div class="pure-control-group">
+      <label for="meteorDistance">Distance</label>
+      <input id="meteorDistance" type="number">
+    </div>
+    <div class="pure-control-group">
+      <label for="meteorCount">Count</label>
+      <input id="meteorCount" type="number">
+    </div>
+    <div class="pure-control-group">
+      <label for="meteorInterval">Interval (in milliseconds)</label>
+      <input id="meteorInterval" type="number">
+    </div>
+  </template>
   <script>
     async function loadRewards() {
       let response = await fetch("/rewards");
@@ -247,6 +265,9 @@
       if (action === rewardTypes.supply.value) {
         return SupplyForm.getSettings();
       }
+      if (action === rewardTypes.meteor.value) {
+        return MeteorForm.getSettings();
+      }
     }
     function openCreateRewardForm(e) {
       e.preventDefault();
@@ -337,6 +358,8 @@
         form = PlayerForm.create(rewardSettings || new PlayerData());
       } else if (selectedValue === rewardTypes.supply.value) {
         form = SupplyForm.create(rewardSettings || new SupplyCartData());
+      } else if (selectedValue === rewardTypes.meteor.value) {
+        form = MeteorForm.create(rewardSettings || new MeteorDropsData());
       }
       if (form) {
         row.after(form);
@@ -478,7 +501,7 @@
         });
         select.replaceChildren(...options);
       }
-      static creatures = [{ value: "Abomination", label: "Abomination" }, { value: "Bat", label: "Bat" }, { value: "Blob", label: "Blob" }, { value: "BlobElite", label: "Oozer" }, { value: "BlobTar", label: "Growth" }, { value: "Boar", label: "Boar" }, { value: "Bonemass", label: "Bonemass" }, { value: "Crow", label: "Crow" }, { value: "Deathsquito", label: "Deathsquito" }, { value: "Deer", label: "Deer" }, { value: "Dragon", label: "Moder" }, { value: "Draugr", label: "Draugr" }, { value: "Draugr_Elite", label: "Draugr Elite" }, { value: "Draugr_Ranged", label: "Draugr Ranged" }, { value: "Dverger", label: "Dvergr Rogue" }, { value: "DvergerMage", label: "Dvergr Mage" }, { value: "DvergerMageFire", label: "Dvergr Mage Fire" }, { value: "DvergerMageIce", label: "Dvergr Mage Ice" }, { value: "DvergerMageSupport", label: "Dvergr Mage Support" }, { value: "Eikthyr", label: "Eikthyr" }, { value: "Fenring", label: "Fenring" }, { value: "Fenring_Cultist", label: "Cultist" }, { value: "FireFlies", label: "FireFlies" }, { value: "Fish1", label: "Fish1" }, { value: "Fish10", label: "Fish10" }, { value: "Fish11", label: "Fish11" }, { value: "Fish12", label: "Fish12" }, { value: "Fish2", label: "Fish2" }, { value: "Fish3", label: "Fish3" }, { value: "Fish4_cave", label: "Fish4_cave" }, { value: "Fish5", label: "Fish5" }, { value: "Fish6", label: "Giant Herring" }, { value: "Fish7", label: "Fish7" }, { value: "Fish8", label: "Fish8" }, { value: "Fish9", label: "Fish9" }, { value: "Flies", label: "Flies" }, { value: "gd_king", label: "Elder" }, { value: "Ghost", label: "Ghost" }, { value: "Gjall", label: "Gjall" }, { value: "Goblin", label: "Fuling" }, { value: "GoblinArcher", label: "Fuling Ranged" }, { value: "GoblinBrute", label: "Fuling Berserker" }, { value: "GoblinKing", label: "Yagluth" }, { value: "GoblinShaman", label: "Fulilng Shaman" }, { value: "Greydwarf", label: "Greydwarf" }, { value: "Greydwarf_Elite", label: "Greydwarf Brute" }, { value: "Greydwarf_Shaman", label: "Greydwarf Shaman" }, { value: "Greyling", label: "Greyling" }, { value: "Hare", label: "Hare" }, { value: "Hatchling", label: "Hatchling" }, { value: "Leech", label: "Leech" }, { value: "Leviathan", label: "Leviathan" }, { value: "Lox", label: "Lox" }, { value: "Neck", label: "Neck" }, { value: "Seagal", label: "Seagal" }, { value: "Seeker", label: "Seeker" }, { value: "SeekerBrood", label: "Seeker Brood" }, { value: "SeekerBrute", label: "Seeker Soldier" }, { value: "SeekerQueen", label: "Queen" }, { value: "Serpent", label: "Serpent" }, { value: "Skeleton", label: "Skeleton Ranged" }, { value: "Skeleton_NoArcher", label: "Skeleton" }, { value: "Skeleton_Poison", label: "Skeleton_Poison" }, { value: "StoneGolem", label: "StoneGolem" }, { value: "Surtling", label: "Surtling" }, { value: "TentaRoot", label: "Elder Root" }, { value: "Tick", label: "Tick" }, { value: "Troll", label: "Troll" }, { value: "Ulv", label: "Ulv" }, { value: "Wolf", label: "Wolf" }, { value: "Wraith", label: "Wraith" }];
+      static creatures = [{ value: "Abomination", label: "Abomination" }, { value: "Bat", label: "Bat" }, { value: "Blob", label: "Blob" }, { value: "BlobElite", label: "Oozer" }, { value: "BlobTar", label: "Growth" }, { value: "Boar", label: "Boar" }, { value: "Bonemass", label: "Bonemass" }, { value: "Crow", label: "Crow" }, { value: "Deathsquito", label: "Deathsquito" }, { value: "Deer", label: "Deer" }, { value: "Dragon", label: "Moder" }, { value: "Draugr", label: "Draugr" }, { value: "Draugr_Elite", label: "Draugr Elite" }, { value: "Draugr_Ranged", label: "Draugr Ranged" }, { value: "Dverger", label: "Dvergr Rogue" }, { value: "DvergerMage", label: "Dvergr Mage" }, { value: "DvergerMageFire", label: "Dvergr Mage Fire" }, { value: "DvergerMageIce", label: "Dvergr Mage Ice" }, { value: "DvergerMageSupport", label: "Dvergr Mage Support" }, { value: "Eikthyr", label: "Eikthyr" }, { value: "Fenring", label: "Fenring" }, { value: "Fenring_Cultist", label: "Cultist" }, { value: "FireFlies", label: "FireFlies" }, { value: "Fish1", label: "Perch" }, { value: "Fish10", label: "Northern salmon" }, { value: "Fish11", label: "Magmafish" }, { value: "Fish12", label: "Pufferfish" }, { value: "Fish2", label: "Pike" }, { value: "Fish3", label: "Tuna" }, { value: "Fish4_cave", label: "Tetra" }, { value: "Fish5", label: "Trollfish" }, { value: "Fish6", label: "Giant herring" }, { value: "Fish7", label: "Grouper" }, { value: "Fish8", label: "Coral cod" }, { value: "Fish9", label: "Anglerfish" }, { value: "Flies", label: "Flies" }, { value: "gd_king", label: "Elder" }, { value: "Ghost", label: "Ghost" }, { value: "Gjall", label: "Gjall" }, { value: "Goblin", label: "Fuling" }, { value: "GoblinArcher", label: "Fuling Ranged" }, { value: "GoblinBrute", label: "Fuling Berserker" }, { value: "GoblinKing", label: "Yagluth" }, { value: "GoblinShaman", label: "Fulilng Shaman" }, { value: "Greydwarf", label: "Greydwarf" }, { value: "Greydwarf_Elite", label: "Greydwarf Brute" }, { value: "Greydwarf_Shaman", label: "Greydwarf Shaman" }, { value: "Greyling", label: "Greyling" }, { value: "Hare", label: "Hare" }, { value: "Hatchling", label: "Hatchling" }, { value: "Leech", label: "Leech" }, { value: "Leviathan", label: "Leviathan" }, { value: "Lox", label: "Lox" }, { value: "Neck", label: "Neck" }, { value: "Seagal", label: "Seagal" }, { value: "Seeker", label: "Seeker" }, { value: "SeekerBrood", label: "Seeker Brood" }, { value: "SeekerBrute", label: "Seeker Soldier" }, { value: "SeekerQueen", label: "Queen" }, { value: "Serpent", label: "Serpent" }, { value: "Skeleton", label: "Skeleton Ranged" }, { value: "Skeleton_NoArcher", label: "Skeleton" }, { value: "Skeleton_Poison", label: "Skeleton_Poison" }, { value: "StoneGolem", label: "StoneGolem" }, { value: "Surtling", label: "Surtling" }, { value: "TentaRoot", label: "Elder Root" }, { value: "Tick", label: "Tick" }, { value: "Troll", label: "Troll" }, { value: "Ulv", label: "Ulv" }, { value: "Wolf", label: "Wolf" }, { value: "Wraith", label: "Wraith" }];
 
       static untamableCreatures = [
         "Crow",
@@ -698,6 +721,54 @@
       }
       static supplyTypes = [{ value: "", label: "Empty" }, { value: "food", label: "Food" }, { value: "mats", label: "Materials" }, { value: "gems", label: "Valuables" }];
     }
+    class MeteorForm {
+      static create(eventData) {
+        let template = document.getElementById("meteorForm");
+        let form = template.content.cloneNode(true);
+
+        let meteorTypeSelect = form.querySelector("#meteorType");
+        this.populateMeteorTypeSelect(meteorTypeSelect, eventData.type);
+
+        let meteorDistanceInput = form.querySelector("#meteorDistance");
+        meteorDistanceInput.value = eventData.distance;
+        
+        let meteorCountInput = form.querySelector("#meteorCount");
+        meteorCountInput.value = eventData.count;
+        
+        let meteorIntervalInput = form.querySelector("#meteorInterval");
+        meteorIntervalInput.value = eventData.interval;
+
+        return form;
+      }
+      static getSettings() {
+        let settings = new MeteorDropsData();
+        settings.type = document.getElementById("meteorType").selectedOptions[0].value;
+        let distance = Number.parseInt(document.getElementById("meteorDistance").value, 10);
+        if (!Number.isNaN(distance)) {
+          settings.distance = distance;
+        }
+        let count = Number.parseInt(document.getElementById("meteorCount").value, 10);
+        if (!Number.isNaN(count)) {
+          settings.count = count;
+        }
+        let interval = Number.parseInt(document.getElementById("meteorInterval").value, 10);
+        if (!Number.isNaN(interval)) {
+          settings.interval = interval;
+        }
+        return settings;
+      }
+      static populateMeteorTypeSelect(select, selectedValue) {
+        let options = this.supplyTypes.map((item) => {
+          let option = document.createElement("option");
+          option.label = item.label;
+          option.value = item.value;
+          option.selected = item.value === selectedValue;
+          return option;
+        });
+        select.replaceChildren(...options);
+      }
+      static supplyTypes = [{ value: "beech_log", label: "Beech logs" }, { value: "beech_log_half", label: "Half beech logs" }, { value: "Fish1", label: "Perch" }, { value: "Fish2", label: "Pike" }, { value: "Fish3", label: "Tuna" }, { value: "Fish4_cave", label: "Tetra" }, { value: "Fish5", label: "Trollfish" }, { value: "Fish6", label: "Giant herring" }, { value: "Fish7", label: "Grouper" }, { value: "Fish8", label: "Coral cod" }, { value: "Fish9", label: "Anglerfish" }, { value: "Fish10", label: "Northern salmon" }, { value: "Fish11", label: "Magmafish" }, { value: "Fish12", label: "Pufferfish" }];
+    }
 
     const rewardTypes = {
       none: {
@@ -731,6 +802,10 @@
       supply: {
         label: "Supply cart",
         title: "Drops a cart with supplies",
+      },
+      meteor: {
+        label: "Meteor drops",
+        title: "Drops stuff from the sky",
       }
     };
     Object.getOwnPropertyNames(rewardTypes).forEach(prop => rewardTypes[prop].value = prop);
@@ -779,6 +854,13 @@
     }
     class SupplyCartData {
       action = rewardTypes.supply.value;
+      type = "";
+      distance = 1;
+      count = 1;
+      interval = 1000;
+    }
+    class MeteorDropsData {
+      action = rewardTypes.meteor.value;
       type = "";
       distance = 1;
       count = 1;

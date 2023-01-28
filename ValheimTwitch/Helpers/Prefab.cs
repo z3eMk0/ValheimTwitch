@@ -169,6 +169,41 @@ namespace ValheimTwitch.Helpers
             }
         }
 
+        public static void SpawnFallingDrop(string type, float offset)
+        {
+            try
+            {
+                var prefab = ZNetScene.instance.GetPrefab(type);
+                if (!prefab)
+                {
+                    Log.Error("Missing prefab " + type);
+                    return;
+                }
+                if (!Player.m_localPlayer)
+                {
+                    Log.Error("Missing local player");
+                    return;
+                }
+
+                Vector3 b = UnityEngine.Random.insideUnitSphere * offset;
+                var position = Player.m_localPlayer.transform.position + Player.m_localPlayer.transform.forward * 2f + Vector3.up * 50f + b;
+
+                Log.Info("Spawning position " + position.ToString());
+
+                var instance = UnityEngine.Object.Instantiate(prefab, position, Quaternion.identity);
+
+                if (!instance)
+                {
+                    Log.Error("Missing prefab instance");
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.ToString());
+            }
+        }
+
         public static void ListPrefabs()
         {
             var prefabs = ZNetScene.instance.GetPrefabNames();

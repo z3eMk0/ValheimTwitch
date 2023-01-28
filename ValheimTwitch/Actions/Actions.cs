@@ -51,6 +51,9 @@ namespace ValheimTwitch.Events
                     case SupplyCartData.ACTION_TYPE:
                         SupplyCartAction.Run(redemption, data as SupplyCartData);
                         break;
+                    case MeteorDropsData.ACTION_TYPE:
+                        MeteorDropsAction.Run(redemption, data as MeteorDropsData);
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }

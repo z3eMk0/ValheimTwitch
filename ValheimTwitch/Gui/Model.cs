@@ -31,6 +31,8 @@ namespace ValheimTwitch.Gui
                         return token.ToObject<PlayerData>();
                     case SupplyCartData.ACTION_TYPE:
                         return token.ToObject<SupplyCartData>();
+                    case MeteorDropsData.ACTION_TYPE:
+                        return token.ToObject<MeteorDropsData>();
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -198,6 +200,27 @@ namespace ValheimTwitch.Gui
             }
         }
 
+        [JsonProperty("type")]
+        public string Type { set; get; }
+
+        [JsonProperty("distance")]
+        public int Distance { set; get; }
+        [JsonProperty("count")]
+        public int Count { set; get; }
+        [JsonProperty("interval")]
+        public int Interval { set; get; }
+    }
+
+    public class MeteorDropsData : SettingsMessageData
+    {
+        public new const string ACTION_TYPE = "meteor";
+        public override string Action
+        {
+            get
+            {
+                return ACTION_TYPE;
+            }
+        }
         [JsonProperty("type")]
         public string Type { set; get; }
 
