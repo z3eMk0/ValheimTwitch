@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using ValheimTwitch.Events;
 using ValheimTwitch.Helpers;
 
 namespace ValheimTwitch.Patches
@@ -52,19 +53,28 @@ namespace ValheimTwitch.Patches
     {
         public static void Prefix(Player __instance)
         {
-            if (CustomInput.GetKeyDown("ToggleAllRewards"))
-            {
-                new Thread(() =>
-                {
-                    Plugin.Instance.ToggleRewards(!Plugin.Instance.isRewardsEnabled);
-                }).Start();
-            }
+            //if (CustomInput.GetKeyDown("ToggleAllRewards"))
+            //{
+            //    new Thread(() =>
+            //    {
+            //        Plugin.Instance.ToggleRewards(!Plugin.Instance.isRewardsEnabled);
+            //    }).Start();
+            //}
 
             if (CustomInput.GetKeyDown("ToggleIgnoringRewards"))
             {
                 Plugin.Instance.ignoreRewards = !Plugin.Instance.ignoreRewards;
-                var message = Plugin.Instance.ignoreRewards ? "enabled" : "disabled";
-                Log.Info($"Ignoring rewards {message}.");
+                var status = Plugin.Instance.ignoreRewards ? "enabled" : "disabled";
+                Log.Info($"Ignoring rewards {status}.");
+                var user = Plugin.Instance.GetUser();
+                if (user != null)
+                {
+                    var name = user.DisplayName;
+                    var message = Plugin.Instance.ignoreRewards ?
+                    $"{name} is safe from the chat. Any new redeem will be ignored." :
+                    $"{name} is back into the fray. Any new redeem will be respected.";
+                    HUDMessageAction.PlayerMessage(message);
+                }
                 return;
             }
 
