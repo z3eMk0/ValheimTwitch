@@ -270,7 +270,7 @@ namespace ValheimTwitch
             {
                 ToggleRewards(false);
             }
-            if(isInGame)
+            if (isInGame)
             {
                 //Prefab.ListPrefabs();
                 //ChangeEnvironmentAction.ListEnvironments();

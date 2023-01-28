@@ -33,7 +33,7 @@ namespace ValheimTwitch.Events
             {
                 for (int i = 0; i < count; i++)
                 {
-                    Task.Delay(i * interval * 1000).ContinueWith(t =>
+                    Task.Delay(i * interval).ContinueWith(t =>
                     {
                         var drops = GetDrops(type);
                         Log.Info($"Supplying {drops}");
