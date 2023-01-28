@@ -28,6 +28,13 @@ namespace ValheimTwitch.Config
             get;
             private set;
         }
+        
+        public bool EnableRewardsAutomatically
+        {
+            get;
+            set;
+        }
+        
         public LiveConfig()
         {
             var token = PluginConfig.GetObject("twitchAuthToken");
@@ -44,6 +51,7 @@ namespace ValheimTwitch.Config
             {
                 Credentials = new Credentials(TWITCH_APP_CLIENT_ID, string.Empty, string.Empty);
             }
+
             rewards = new RewardsConfig("Rewards");
             rewards.Load();
         }

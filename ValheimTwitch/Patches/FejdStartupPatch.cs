@@ -40,6 +40,7 @@ namespace ValheimTwitch.Patches
     public static class FejdStartupStartPatch
     {
         public static GameObject gui;
+        public static GameObject mainGui;
         //public static ValheimTwitchGUIScript guiScript;
 
         public static List<Shortcut> shortcuts = new List<Shortcut> { 
@@ -64,7 +65,7 @@ namespace ValheimTwitch.Patches
 
         public static void Postfix(FejdStartup __instance)
         {
-            var mainGui = __instance.m_mainMenu;
+            mainGui = __instance.m_mainMenu;
             //gui.transform.SetParent(mainGui.transform);
 
             //guiScript = gui.GetComponent<ValheimTwitchGUIScript>();
@@ -170,6 +171,51 @@ namespace ValheimTwitch.Patches
                     //Log.Warning($"Reward image unavailable: {reward.Title}");
                 }
             }
+        }
+    }
+
+    [HarmonyPatch(typeof(FejdStartup), "OnStartGame")]
+    public static class FejdStartupOnStartGamePatch
+    {
+        public static void Postfix(FejdStartup __instance)
+        {
+            Plugin.initialScreen.RefreshMainPanel();
+        }
+    }
+
+    [HarmonyPatch(typeof(FejdStartup), "ShowStartGame")]
+    public static class FejdStartupShowStartGamePatch
+    {
+        public static void Postfix(FejdStartup __instance)
+        {
+            Plugin.initialScreen.RefreshMainPanel();
+        }
+    }
+
+    [HarmonyPatch(typeof(FejdStartup), "OnCredits")]
+    public static class FejdStartupOnCreditsPatch
+    {
+        public static void Postfix(FejdStartup __instance)
+        {
+            Plugin.initialScreen.RefreshMainPanel();
+        }
+    }
+
+    [HarmonyPatch(typeof(FejdStartup), "OnSelelectCharacterBack")]
+    public static class FejdStartupOnSelelectCharacterBackPatch
+    {
+        public static void Postfix(FejdStartup __instance)
+        {
+            Plugin.initialScreen.RefreshMainPanel();
+        }
+    }
+
+    [HarmonyPatch(typeof(FejdStartup), "OnCreditsBack")]
+    public static class FejdStartupOnCreditsBackPatch
+    {
+        public static void Postfix(FejdStartup __instance)
+        {
+            Plugin.initialScreen.RefreshMainPanel();
         }
     }
 }

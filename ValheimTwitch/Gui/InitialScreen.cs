@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using ValheimTwitch.Config;
+using ValheimTwitch.Patches;
 
 namespace ValheimTwitch.Gui
 {
@@ -142,7 +143,7 @@ namespace ValheimTwitch.Gui
         public void RefreshMainPanel()
         {
             Log.Info($"mainPanelObject {mainPanelObject}");
-            if (Plugin.Instance.isInGame)
+            if (FejdStartupStartPatch.mainGui == null || !FejdStartupStartPatch.mainGui.activeSelf)
             {
                 mainPanelObject.SetActive(false);
                 return;

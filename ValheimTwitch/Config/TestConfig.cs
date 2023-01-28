@@ -19,6 +19,8 @@ namespace ValheimTwitch.Config
 
         public Credentials Credentials { get; private set; }
 
+        public bool EnableRewardsAutomatically { get; set; }
+
         public TestConfig()
         {
             var clientIdConfigEntry = Plugin.Instance.Config.Bind(SECTION_NAME, "clientId", "", "Id of the Twitch mock client.");

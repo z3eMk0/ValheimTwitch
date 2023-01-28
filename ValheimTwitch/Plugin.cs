@@ -258,7 +258,17 @@ namespace ValheimTwitch
             Log.Info("Next scene name " + next.name);
             isInGame = next.name == "main";
 
-            ToggleRewards(isInGame);
+            if (isInGame)
+            {
+                if (configProvider.EnableRewardsAutomatically)
+                {
+                    ToggleRewards(true);
+                }
+            }
+            else
+            {
+                ToggleRewards(false);
+            }
             if(isInGame)
             {
                 //Prefab.ListPrefabs();

@@ -7,5 +7,6 @@ namespace ValheimTwitch.Config
         RewardsConfig Rewards { get; }
         string HelixUrl { get; }
         Credentials Credentials { get; }
+        bool EnableRewardsAutomatically { get; }
     }
 }
