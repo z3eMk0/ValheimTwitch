@@ -79,6 +79,19 @@ namespace ValheimTwitch.Helpers
             return texture;
         }
 
+        public static Sprite LoadSprite(string assetPath)
+        {
+            Texture2D texture = LoadTexture2D(assetPath);
+            if (texture != null)
+            {
+                return Sprite.Create(texture, new Rect(0.0f, 0.0f, (float)texture.width, (float)texture.height), Vector2.zero);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public static AudioClip LoadAudioClip(string assetPath)
         {
             AudioClip audioClip = null;

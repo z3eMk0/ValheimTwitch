@@ -22,7 +22,7 @@ namespace ValheimTwitch.Config
 
         public bool EnableRewardsAutomatically { get; set; }
 
-        public KeyCode IgnoreRewardsKey { get; set; }
+        public KeyCode ToggleSpawnRewardsKey { get; set; }
 
         public TestConfig()
         {

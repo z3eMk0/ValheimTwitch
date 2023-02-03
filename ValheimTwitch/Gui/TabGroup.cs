@@ -51,10 +51,6 @@ namespace ValheimTwitch.Gui
                     new Vector2(tabButtonWidth / 2, -tabButtonHeight / 2),
                     tabButtonWidth, tabButtonHeight);
                 Log.Info($"button position {button.transform.localPosition}");
-                //button.transform.
-                //button.transform.localPosition = new Vector3(i * tabButtonSize, 0);
-                //Sprite var1 = AssetUtils.LoadSpriteFromFile("JotunnModExample/Assets/test_var1.png");
-                //ItemManager.Instance.AddItem
             }
         }
 

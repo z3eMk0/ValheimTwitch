@@ -100,6 +100,7 @@
     <Compile Include="Actions\ChangeEnvironmentAction.cs" />
     <Compile Include="Actions\MeteorDropsAction.cs" />
     <Compile Include="Actions\PlayerAction.cs" />
+    <Compile Include="Actions\SpawnControl.cs" />
     <Compile Include="Actions\StartRandomEventAction.cs" />
     <Compile Include="Actions\HUDMessageAction.cs" />
     <Compile Include="Actions\RavenMessageAction.cs" />
@@ -210,6 +211,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Assets\pure-min.css" />
+    <EmbeddedResource Include="Assets\spawns-disabled-icon.png" />
     <Content Include="test-setup.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

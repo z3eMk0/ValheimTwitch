@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using ValheimTwitch.Gui;
 using ValheimTwitch.Twitch.PubSub.Messages;
 
@@ -14,15 +15,18 @@ namespace ValheimTwitch.Events
 
     public static class Actions
     {
+        private static HashSet<string> spawnActions = new HashSet<string>
+        {
+            SpawnCreatureData.ACTION_TYPE,
+            RandomEventData.ACTION_TYPE,
+            SupplyCartData.ACTION_TYPE,
+            MeteorDropsData.ACTION_TYPE,
+        };
         internal static void RunAction(Redemption redemption, SettingsMessageData data)
         {
             try
             {
                 var type = data.Action;
-                if (IgnoreRewards())
-                {
-                    return;
-                }
 
                 Log.Info($"RunAction: {redemption.Reward.Id} -> type: {type}");
 
@@ -64,9 +68,9 @@ namespace ValheimTwitch.Events
             }
         }
 
-        private static bool IgnoreRewards()
+        public static bool IsSpawn(string action)
         {
-            return Plugin.Instance.ignoreRewards;
+            return spawnActions.Contains(action);
         }
     }
 }

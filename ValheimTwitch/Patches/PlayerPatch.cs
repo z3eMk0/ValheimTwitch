@@ -61,19 +61,18 @@ namespace ValheimTwitch.Patches
             //    }).Start();
             //}
 
-            if (CustomInput.GetKeyDown("ToggleIgnoringRewards"))
+            if (CustomInput.GetKeyDown("ToggleSpawnRewards"))
             {
-                Plugin.Instance.ignoreRewards = !Plugin.Instance.ignoreRewards;
-                var status = Plugin.Instance.ignoreRewards ? "enabled" : "disabled";
-                Log.Info($"Ignoring rewards {status}.");
-                var user = Plugin.Instance.GetUser();
-                if (user != null)
+                Plugin.Instance.disableSpawnRewards = !Plugin.Instance.disableSpawnRewards;
+                if (Plugin.Instance.disableSpawnRewards)
                 {
-                    var name = user.DisplayName;
-                    var message = Plugin.Instance.ignoreRewards ?
-                    $"{name} is safe from the chat. Any new redeem will be ignored." :
-                    $"{name} is back into the fray. Any new redeem will be respected.";
-                    HUDMessageAction.PlayerMessage(message);
+                    __instance.GetSEMan().AddStatusEffect(Plugin.Instance.SpawnsDisabledEffect.StatusEffect);
+                    SpawnControl.DisableSpawns();
+                }
+                else
+                {
+                    __instance.GetSEMan().RemoveStatusEffect(Plugin.Instance.SpawnsDisabledEffect.StatusEffect);
+                    SpawnControl.EnableSpawns();
                 }
                 return;
             }

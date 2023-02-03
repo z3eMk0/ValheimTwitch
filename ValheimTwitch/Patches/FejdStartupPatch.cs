@@ -46,7 +46,7 @@ namespace ValheimTwitch.Patches
         public static List<Shortcut> shortcuts = new List<Shortcut> { 
             new Shortcut { Name = "Whistle", Label = "Whistle" },
             new Shortcut { Name = "ToggleAllRewards", Label = "Toggle all rewards" },
-            new Shortcut { Name = "ToggleIgnoringRewards", Label = "Toggle ignoring of any reward" }
+            new Shortcut { Name = "ToggleSpawnRewards", Label = "Toggle spawn rewards" }
         };
         
         public static void LoadShortcuts()
@@ -62,7 +62,7 @@ namespace ValheimTwitch.Patches
                 //    shortcut.Code = args.Code;
                 //});
             }
-            shortcuts.Find(s => s.Name == "ToggleIgnoringRewards").Code = Plugin.Instance.configProvider.IgnoreRewardsKey;
+            shortcuts.Find(s => s.Name == "ToggleSpawnRewards").Code = Plugin.Instance.configProvider.ToggleSpawnRewardsKey;
         }
 
         public static void Postfix(FejdStartup __instance)

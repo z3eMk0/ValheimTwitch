@@ -9,6 +9,6 @@ namespace ValheimTwitch.Config
         string HelixUrl { get; }
         Credentials Credentials { get; }
         bool EnableRewardsAutomatically { get; }
-        KeyCode IgnoreRewardsKey { get; }
+        KeyCode ToggleSpawnRewardsKey { get; }
     }
 }

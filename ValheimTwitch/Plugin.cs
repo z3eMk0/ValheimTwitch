@@ -1,9 +1,12 @@
 ﻿using BepInEx;
 using HarmonyLib;
+using Jotunn.Entities;
+using Jotunn.Managers;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using ValheimTwitch.Config;
 using ValheimTwitch.Events;
@@ -38,7 +41,7 @@ namespace ValheimTwitch
         public bool isInGame = false;
         public bool isRewardsEnabled = false;
         public bool isHuginIntroShown = false;
-        public bool ignoreRewards = false;
+        public bool disableSpawnRewards = false;
         public static bool isRewardUpdating = false;
 
         public IConfigProvider configProvider;
@@ -50,6 +53,8 @@ namespace ValheimTwitch
         private static Plugin instance;
 
         internal static InitialScreen initialScreen;
+        internal CustomStatusEffect SpawnsDisabledEffect;
+        private CustomLocalization Localization;
 
         public static Plugin Instance
         {
@@ -105,6 +110,8 @@ namespace ValheimTwitch
             initialScreen.Start();
 
             new Twitch.Test.RedeemServer().Start();
+            AddStatusEffects();
+            AddLocalizations();
         }
 
         public void InitConfig()
@@ -294,6 +301,36 @@ namespace ValheimTwitch
                 return;
 
             Actions.RunAction(e.Redemption, action);
+        }
+
+        private void AddStatusEffects()
+        {
+            StatusEffect effect = ScriptableObject.CreateInstance<StatusEffect>();
+            effect.name = "SpawnsDisabledStatusEffect";
+            effect.m_name = "$spawnsdisabled_effectname";
+            effect.m_icon = EmbeddedAsset.LoadSprite("Assets.spawns-disabled-icon.png");
+            Log.Info($"status effect icon {effect.m_icon}");
+            effect.m_startMessageType = MessageHud.MessageType.Center;
+            effect.m_startMessage = "$spawnsdisabled_effectstart";
+            effect.m_stopMessageType = MessageHud.MessageType.Center;
+            effect.m_stopMessage = "$spawnsdisabled_effectstop";
+
+            SpawnsDisabledEffect = new CustomStatusEffect(effect, fixReference: false);  // We dont need to fix refs here, because no mocks were used
+            ItemManager.Instance.AddStatusEffect(SpawnsDisabledEffect);
+        }
+
+        private void AddLocalizations()
+        {
+            // Create a custom Localization instance and add it to the Manager
+            Localization = new CustomLocalization();
+            LocalizationManager.Instance.AddLocalization(Localization);
+
+            Localization.AddTranslation("English", new Dictionary<string, string>
+            {
+                {"spawnsdisabled_effectname", "No spawns" },
+                {"spawnsdisabled_effectstart", "You are safe from the chat. Spawns are disabled." },
+                {"spawnsdisabled_effectstop", "You are back into the fray. Spawns are enabled." },
+            });
         }
     }
 }
