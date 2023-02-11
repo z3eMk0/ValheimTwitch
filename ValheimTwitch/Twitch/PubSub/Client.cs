@@ -222,6 +222,7 @@ namespace ValheimTwitch.Twitch.PubSub
             {
                 var message = iMessage as Messages.Message;
 
+                Log.Info($"Twitch sent a WebSocket message with topic: '{message.Data.Topic}' and body: {message.Data.Message}");
                 if (message.Data.Topic.StartsWith("channel-points-channel"))
                 {
                     var rewardRedeem = JsonConvert.DeserializeObject<Messages.RewardRedeem>(message.Data.Message);
